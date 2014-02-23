@@ -8,3 +8,22 @@
 
 @import '../../dojo/resources/dojo.css';
 @import '../../dijit/themes/claro/claro.css';
+
+html, body{
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+.navbar a{
+	margin-left:10px;
+}
+#sidebar{
+	width:300px;
+	float:left;
+	background-color:#A3CFCD;
+}
+#activityWrapper{
+	width:100%;
+	float:left;
+	background-color:black;
+}
