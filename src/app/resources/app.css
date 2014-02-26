@@ -23,7 +23,7 @@ html, body{
 	background-color:#A3CFCD;
 }
 #activityWrapper{
-	width:100%;
+	width:70%;
+	min-width:600px;
 	float:left;
-	background-color:black;
 }

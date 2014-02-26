@@ -5,11 +5,12 @@ define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/dom-construct",
+	"dojo/Deferred",
 	"dojo/router",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/CSLab.html"
-],function(ActivitySplash, Binary, Boolean, declare, lang, domConstruct, router, _WidgetBase, _TemplatedMixin, template){
+],function(ActivitySplash, Binary, Boolean, declare, lang, domConstruct, Deferred, router, _WidgetBase, _TemplatedMixin, template){
 
 	return declare([_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -33,8 +34,18 @@ define([
 
 		startup: function(){
 			domConstruct.empty(this.containerNode);
-			router.register("/binary", lang.hitch(this, function(evt){
-				this.replaceContent(new ActivitySplash("Binary"));
+			router.register("/binary/?(.*)", lang.hitch(this, function(evt){
+				if(this.splash && this.splash.activityName == "Binary"){
+					console.log("existing Activity, placing problem");
+  					this.splash.setProblem(evt.params[0]);
+  				}else{
+  					// async handled within splash page.
+  					console.log("new Activity, creating and placing problem");
+  					this.replaceContent(new ActivitySplash("Binary"));
+  					if(evt.params[0] !== ""){
+  						this.splash.setProblem(evt.params[0]);
+  					}
+  				}
   			}));
 
   			router.register("/boolean", lang.hitch(this, function(evt){
