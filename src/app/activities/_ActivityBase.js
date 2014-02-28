@@ -11,9 +11,13 @@ define([
 		problem: null,
 		data: null,
 		flags: null,
+		timer: null,
 
 
 		success: function(){
+			if(this.flags.race){
+				console.log("Completed Activity in: "+this.timer.stop());
+			}
 			console.log("successfully completed: "+this.name+" problem ");
 			topic.publish("ActivitySuccess", {name: this.name});
 		}

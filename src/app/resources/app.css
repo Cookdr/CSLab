@@ -14,13 +14,55 @@ html, body{
 	width: 100%;
 	overflow: hidden;
 }
+.cs_lab{
+	padding-top:10px;
+}
+#logo{
+	float:left;
+	background-image:url(images/logo.png);
+	background-position:center;
+	background-repeat:no-repeat;
+	width:100px;
+	height:100px;
+}
+.navbar{
+	float:left;
+	width:80%;
+	height:36px;
+	background-color:#031c2b;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	line-height:36px;
+}
 .navbar a{
+	color:#A3CFCD;
+	font-size:16px;
+	font-weight:bold;
+	text-decoration:none;
 	margin-left:10px;
 }
+.navbar a:hover{
+	text-decoration:underline;
+}
 #sidebar{
-	width:300px;
+	clear:both;
+	padding-left:8px;
+	color:#A3CFCD;
+	width:150px;
 	float:left;
-	background-color:#A3CFCD;
+	background-color:#031c2b;
+	-moz-border-radius-topright: 20px;
+	-webkit-border-top-right-radius: 20px;
+	border-top-right-radius: 20px;
+	-moz-border-radius-bottomright: 20px;
+	-webkit-border-bottom-right-radius: 20px;
+	border-bottom-right-radius: 20px;
+}
+#sidebar li a{
+	color:#A3CFCD;
+}
+.sidebarLevelWrapper{
+	padding-left:10px;
 }
 #activityWrapper{
 	width:70%;

@@ -1,4 +1,5 @@
 define([
+	"app/Timer",
 	"dojo/_base/array",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
@@ -7,18 +8,22 @@ define([
 	"dojo/on",
 	"dijit/form/TextBox",
 	"dojox/gfx",
-	"dojox/gfx/Moveable",
+	"dojox/gfx/fx",
 	"./_ActivityBase",
 	"dojo/text!./templates/Binary.html"
-],function(array, declare, lang, domConstruct, html, on, TextBox, gfx, Moveable, _ActivityBase, template){
+],function(Timer, array, declare, lang, domConstruct, html, on, TextBox, gfx, gfxfx, _ActivityBase, template){
 
 	return declare("app.activities.Binary",[_ActivityBase], {
 
 		constructor: function(problem){
 			this.problem = problem;
 			this.type = problem.type;
-			this.data = problem.problemData;
 			this.flags = problem.flags;
+			if(this.flags.random){
+				this.data = this._randArray();
+			}else{
+				this.data = problem.problemData.slice();
+			}
 
 			console.log(problem.problemData);
 		},
@@ -41,13 +46,13 @@ define([
 			for(i = 0; i <5; i++){
 				card = this.canvas.createGroup();
 				if(type == "dots"){
-					card.createImage({x:(400-i*100)+5, y:100, width:80, height:120, src:"app/resources/images/"+(i+1)+".png"});
-					card.createRect({x:(400-i*100)+5, y:100, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,1]);
+					card.createImage({x:(400-i*100)+5, y:30, width:80, height:120, src:"app/resources/images/"+(i+1)+".png"});
+					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,1]);
 					card.activate = this._activateDotsCard;
 					card.deactivate = this._deactivateDotsCard;
 				}else if(type == "binary"){
-					card.createRect({x:(400-i*100)+5, y:100, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,0]);
-					card.createText({x:(400-i*100)+30, y:170, text:"0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
+					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,0]);
+					card.createText({x:(400-i*100)+30, y:105, text:"0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
 					card.activate = this._activateBinaryCard;
 					card.deactivate = this._deactivateBinaryCard;
 				}
@@ -68,10 +73,14 @@ define([
 			var i;
 			for(i=this.cards.length-1; i >=0; i--){
 				if(this.cards[i].decVal <= value){
+					this.cards[i].active = true;
 					this.cards[i].activate();
 					value = value-this.cards[i].decVal;
 				}else{
-					this.cards[i].deactivate();
+					if(this.cards[i].active){
+						this.cards[i].deactivate();
+					}
+					this.cards[i].active = false;
 				}
 			}
 		},
@@ -79,6 +88,7 @@ define([
 		toggleActive: function(evt){
 			var card = evt.gfxTarget;
 			card.getParent().active = !card.getParent().active;
+
 			if(card.getParent().active){
 				card.getParent().activate();
 			}else{
@@ -86,18 +96,6 @@ define([
 			}
 
 			this.updateCurNum();
-		},
-		_activateDotsCard: function(){
-			this.children[1].setFill([0,0,0,0]);
-		}, 
-		_deactivateDotsCard: function(){
-			this.children[1].setFill("black");
-		},
-		_activateBinaryCard: function(){
-			this.children[1].setShape({text: "1"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
-		},
-		_deactivateBinaryCard: function(){
-			this.children[1].setShape({text: "0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
 		},
 
 		updateCurNum: function(){
@@ -144,7 +142,7 @@ define([
 		},
 
 		startup: function(){
-			this.canvas = gfx.createSurface(this.gfxNode, 600, 400);
+			this.canvas = gfx.createSurface(this.gfxNode, 600, 200);
 			if(this.type == "DecToBin"){
 				this.updateSuccess = this.decToBinSuccess;
 				this.createCards(true, this.flags.cards);
@@ -167,7 +165,43 @@ define([
 				this.decTxtBox.focus();
 				this.updateSuccess = this.binToDecSuccess;
 			}
+			
+			if(this.flags.race){
+				this.timer = new Timer().placeAt(this.containerNode);
+				this.timer.start();
+			}
 
+		},
+
+		_activateDotsCard: function(){
+			this.children[1].setFill([0,0,0,0]);
+		}, 
+		_deactivateDotsCard: function(){
+			this.children[1].setFill("black");
+		},
+		_activateBinaryCard: function(){
+			this.children[1].setShape({text: "1"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
+		},
+		_deactivateBinaryCard: function(){
+			this.children[1].setShape({text: "0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
+		},
+
+		// _shrinkCard: function(card){
+		// 	var animation = new gfxFx.animateTransform({
+		// 	    duration: 700,
+		// 	    shape: card,
+		// 	    transform: [{name: "scaleAt", start: [1, group.x, group.y],
+		// 	    end: [1, group.x/4, navGroupCenter.y]}]
+		// 	});
+		// },
+
+		_randArray: function(){
+			var i, arr = [];
+			for(i=0; i <10; i++){
+				arr.push(Math.floor((Math.random()*31)));
+			}
+
+			return arr;
 		}
 	});
 });

@@ -9,12 +9,13 @@ define([
 	"dojo/request/xhr",
 	"dojo/router",
 	"dojo/topic",
+    "dijit/form/Button",
 	"dijit/ProgressBar",
 	"dijit/registry",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/ActivitySplash.html"
-],function(Binary, Boolean, declare, lang, domConstruct, html, on, xhr, router, topic, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
+],function(Binary, Boolean, declare, lang, domConstruct, html, on, xhr, router, topic, Button, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.ActivitySplash",[_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -57,6 +58,10 @@ define([
     		this.progressBar.set({value:(parseInt(this.progressBar.get("value"))+1)});
             domConstruct.empty(this.containerNode);
             html.set(this.containerNode,"Success!");
+
+            if(this.progressBar.get("value") == this.progressBar.get("maximum")){
+                alert("You've completed this Activity!");
+            }
     	},
 
     	setProblem: function(problem){
@@ -103,17 +108,19 @@ define([
     	},
 
     	updateSidebar: function(problemList){
-    		var i,j,list, level, link, counter = 0, levels = problemList.levels;
+    		var i,j,list, button, level, counter = 0, levels = problemList.levels;
     		for(i=0; i < levels.length; i++){
     			level = problemList.levels[i];
     			domConstruct.create("h2", {innerHTML: "Level "+level.level.toString()},this.sidebarContainerNode);
-    			list = domConstruct.create("ol",null,this.sidebarContainerNode);
+    			list = domConstruct.create("div",{class:"sidebarLevelWrapper"},this.sidebarContainerNode);
     			for(j = 0; j< level.problems.length; j++){
-    				link = domConstruct.create("li",{innerHTML: '<a href="/'+this.activityName.toLowerCase()+'/'+(i+1)+'/'+(j+1)+'">'+"Problem "+j+"</a>"}, list);
-    				on(link, "click", lang.hitch(this, function(evt){
-    					evt.preventDefault();
-						router.go(evt.target.pathname);
-    				}));
+    				button = new Button({
+                        label: "Problem "+(j+1),
+                        dest: "/"+this.activityName.toLowerCase()+"/"+(i+1)+"/"+(j+1),
+                        onClick: function(evt){
+                            router.go(this.dest);
+                        }
+                    }).placeAt(list);
     				counter++;
     			}
     		}
@@ -124,6 +131,10 @@ define([
 			this.progressBar.placeAt(this.progressBarNode);
 			html.set(this.activityTitleNode, this.activityName);
 			topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));
-		}
+		},
+
+        _goToProblem: function(problem){
+            router.go(problem);
+        }
 	});
 });

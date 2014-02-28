@@ -48,8 +48,18 @@ define([
   				}
   			}));
 
-  			router.register("/boolean", lang.hitch(this, function(evt){
-				this.replaceContent(new ActivitySplash("Boolean"));
+  			router.register("/boolean/?(.*)", lang.hitch(this, function(evt){
+				if(this.splash && this.splash.activityName == "Boolean"){
+					console.log("existing Activity, placing problem");
+  					this.splash.setProblem(evt.params[0]);
+  				}else{
+  					// async handled within splash page.
+  					console.log("new Activity, creating and placing problem");
+  					this.replaceContent(new ActivitySplash("Boolean"));
+  					if(evt.params[0] !== ""){
+  						this.splash.setProblem(evt.params[0]);
+  					}
+  				}
   			}));
   			router.startup();
 		}

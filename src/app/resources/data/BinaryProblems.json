@@ -7,7 +7,8 @@
 					"type": "DecToBin",
 					"problemData": [1,2,3,4,5,6,7,8], 
 				 	"flags":{
-				 		"cards": "dots"
+				 		"cards": "dots",
+				 		"race": true
 				 	}
 				},
 				{
@@ -50,6 +51,48 @@
 						"cards": "binary"
 					}
 				}
+			]
+		},
+		{
+			"level":3,
+			"problems":[
+				{
+					"type": "BinToDec",
+					"problemData":[],
+					"flags":{
+						"cards": "dots",
+						"random": true,
+						"race": true
+					}
+				},
+				{
+					"type": "DecToBin",
+					"problemData":[],
+					"flags":{
+						"cards": "dots",
+						"random": true,
+						"race": true
+					}
+				},
+				{
+					"type": "BinToDec",
+					"problemData":[],
+					"flags":{
+						"cards": "binary",
+						"random": true,
+						"race": true
+					}
+				},
+				{
+					"type": "DecToBin",
+					"problemData":[],
+					"flags":{
+						"cards": "binary",
+						"random": true,
+						"race": true
+					}
+				}
+
 			]
 		}
 	]
