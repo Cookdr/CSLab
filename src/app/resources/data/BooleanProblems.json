@@ -1,0 +1,23 @@
+{
+	"levels": [
+		{
+			"level": 1,
+			"problems": [
+				{
+					"type": "pickOne",
+					"problemData": [
+						{"shape": "circle", "pattern": "solid", "color": "blue"},
+						{"shape": "square", "pattern": "outline", "color": "red"},
+						{"shape": "circle", "pattern": "outline", "color": "black"},
+						{"shape": "star", "pattern": "solid", "color": "red"},
+						{"shape": "square", "pattern": "solid", "color": "blue"},
+						{"shape": "star", "pattern": "outline", "color": "black"}
+					], 
+				 	"flags":{
+				 		"shapes":"shapes"
+				 	}
+				}
+			]
+		}
+	]
+}

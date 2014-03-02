@@ -22,24 +22,19 @@ define([
 
 		constructor: function(activityName){
 			this.activityName = activityName;
-			switch(activityName){
-				case "Binary" : xhr("app/resources/data/BinaryProblems.json", {
-							      	handleAs: "json",
-                                    preventCache: true
-							    }).then(lang.hitch(this, function(data){
-							    	this.problemList = data;
-							    	this.updateSidebar(this.problemList);
-                                    if(this.problem){
-							    	    this.placeProblem();
-                                    }
-							  	}), function(err){
-							    	console.log(err);
-							  	});
-				break;
-				case "Boolean" : this.activity = new Boolean();
-				break;
-				default: this.activity = new Binary();
-			}
+			
+            xhr("app/resources/data/"+activityName+"Problems.json", {
+                handleAs: "json",
+                preventCache: true
+            }).then(lang.hitch(this, function(data){
+                this.problemList = data;
+                this.updateSidebar(this.problemList);
+                if(this.problem){
+                    this.placeProblem();
+                }
+            }), function(err){
+                console.log(err);
+            });
 		},
 
 		templateString: template,
@@ -65,7 +60,6 @@ define([
     	},
 
     	setProblem: function(problem){
-    		//if(this.problem){
     			if(this.problemList && problem != this.problem){
     				console.log("Setting problem: "+problem);
     				this.problem = problem;
@@ -73,16 +67,9 @@ define([
     			} else{
                     this.problem = problem;
                 }
-    	//	}else{
-    	//		this.problem = problem;
-         //       this.placeProblem();
-    	//	}
     	},
 
     	placeProblem: function(){
-   //  		dojo.forEach(registry.findWidgets(this.containerNode), function(w) {
-   //  			w.destroyRecursive();
-			// });
             domConstruct.empty(this.containerNode);
     		// Add error checking to make sure it's a valid problem
     		// and not just garbage in the hash.
@@ -97,7 +84,7 @@ define([
     				case 2: console.log("Level "+splitProb[0]+" Problem: "+splitProb[1]);
     						level = parseInt(splitProb[0])-1;
     						problem = parseInt(splitProb[1])-1;
-    						this.activity = new Binary(this.problemList.levels[level].problems[problem]);
+                            this._createActivity(this.problemList.levels[level].problems[problem]);
     						this.activity.placeAt(this.containerNode);
     						break;
     				default: console.log("something wrong with problem: "+this.problem);
@@ -112,7 +99,7 @@ define([
     		for(i=0; i < levels.length; i++){
     			level = problemList.levels[i];
     			domConstruct.create("h2", {innerHTML: "Level "+level.level.toString()},this.sidebarContainerNode);
-    			list = domConstruct.create("div",{class:"sidebarLevelWrapper"},this.sidebarContainerNode);
+    			list = domConstruct.create("div",{"class":"sidebarLevelWrapper"},this.sidebarContainerNode);
     			for(j = 0; j< level.problems.length; j++){
     				button = new Button({
                         label: "Problem "+(j+1),
@@ -127,14 +114,23 @@ define([
     		this.progressBar.set("maximum",counter);
     	},
 
+        _createActivity: function(problem){
+            var act;
+            switch(this.activityName){
+                case "Binary": act = new Binary(problem);
+                break;
+                case "Boolean": act = new Boolean(problem);
+                break;
+                default: act = new Binary();
+            }
+
+            this.activity = act;
+        },
+
 		postCreate: function(){
 			this.progressBar.placeAt(this.progressBarNode);
 			html.set(this.activityTitleNode, this.activityName);
 			topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));
-		},
-
-        _goToProblem: function(problem){
-            router.go(problem);
-        }
+		}
 	});
 });

@@ -9,57 +9,86 @@
 @import '../../dojo/resources/dojo.css';
 @import '../../dijit/themes/claro/claro.css';
 
+
+/*
+* General CSS
+*/
 html, body{
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
+	background-image:url(images/bg.gif);
+	text-align: center;
 }
-.cs_lab{
-	padding-top:10px;
-}
-#logo{
-	float:left;
-	background-image:url(images/logo.png);
-	background-position:center;
-	background-repeat:no-repeat;
-	width:100px;
-	height:100px;
-}
-.navbar{
-	float:left;
+.csLab{
+	display: inline-block;
+	text-align: left;
 	width:80%;
-	height:36px;
-	background-color:#031c2b;
-	-moz-border-radius: 20px;
-	border-radius: 20px;
-	line-height:36px;
 }
-.navbar a{
+#headerWrapper{
+	margin:0 auto;
+	width:600px;
+}
+#header{
+	float:left;
+	background-image: url(images/leftHeader.png);
+	background-repeat:no-repeat;
+	padding-left:42px;
+	height:109px;
+	text-align:center;
+	margin-bottom:15px;
+}
+#innerHeader{
+	height:109px;
+}
+#topHeader{
+	height:48px;
+	background-image:url(images/headerbg.gif);
+}
+#rightHeader{
+	float:left;
+	background-image:url(images/rightHeader.png);
+	width:43px;
+	height:109px;
+	background-repeat:no-repeat;
+	margin-left:-2px;
+}
+.activitySplash{
+	margin:0 auto;
+}
+#navbar{
+	line-height:61px;
+	height:61px;
+	background-image:url(images/navbg.gif);
+	background-repeat:repeat-x;
+}
+#navbar a{
+	float:left;	
 	color:#A3CFCD;
 	font-size:16px;
 	font-weight:bold;
 	text-decoration:none;
-	margin-left:10px;
+	padding-left:10px;
+	padding-right:10px;
 }
-.navbar a:hover{
+#navbar a:hover{
 	text-decoration:underline;
+	background-image:url(images/navbg_active.gif);
 }
 #sidebar{
 	clear:both;
 	padding-left:8px;
-	color:#A3CFCD;
+	color:#balck;
 	width:150px;
 	float:left;
-	background-color:#031c2b;
-	-moz-border-radius-topright: 20px;
-	-webkit-border-top-right-radius: 20px;
-	border-top-right-radius: 20px;
-	-moz-border-radius-bottomright: 20px;
-	-webkit-border-bottom-right-radius: 20px;
-	border-bottom-right-radius: 20px;
+	background-color:#e2e2e2;
+	border:2px solid black;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
 }
 #sidebar li a{
-	color:#A3CFCD;
+	color:#black;
 }
 .sidebarLevelWrapper{
 	padding-left:10px;
@@ -68,4 +97,26 @@ html, body{
 	width:70%;
 	min-width:600px;
 	float:left;
+	padding:8px;
+	margin-left:20px;
+	background-color:#e2e2e2;
+	border:2px solid black;
+	border-radius: 15px;
+	-moz-border-radius:15px;
+	-webkit-border-radius:15px;
 }
+
+/*
+*  Boolean Activity CSS
+*/
+.booleanPropertyCol{
+	float:left;
+	background-color:#A3CFCD;
+}
+.booleanGfxNode{
+	float:left;
+}
+
+/*
+*  Binary Activity CSS
+*/

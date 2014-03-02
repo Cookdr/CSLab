@@ -15,6 +15,14 @@ define([
 
 	return declare("app.activities.Binary",[_ActivityBase], {
 
+		//	set our template
+		templateString: template,
+		name: "Binary",
+		canvas: null,
+		cards: null,
+		// function to test success
+		updateSuccess: null,
+
 		constructor: function(problem){
 			this.problem = problem;
 			this.type = problem.type;
@@ -27,13 +35,6 @@ define([
 
 			console.log(problem.problemData);
 		},
-		//	set our template
-		templateString: template,
-		name: "Binary",
-		canvas: null,
-		cards: null,
-		// function to test success
-		updateSuccess: null,
 
 		createCards: function(clickable, type){
 			if(this.cards){
@@ -46,11 +47,13 @@ define([
 			for(i = 0; i <5; i++){
 				card = this.canvas.createGroup();
 				if(type == "dots"){
+					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setFill("white");
 					card.createImage({x:(400-i*100)+5, y:30, width:80, height:120, src:"app/resources/images/"+(i+1)+".png"});
 					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,1]);
 					card.activate = this._activateDotsCard;
 					card.deactivate = this._deactivateDotsCard;
 				}else if(type == "binary"){
+					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setFill("white");
 					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,0]);
 					card.createText({x:(400-i*100)+30, y:105, text:"0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
 					card.activate = this._activateBinaryCard;
@@ -174,16 +177,16 @@ define([
 		},
 
 		_activateDotsCard: function(){
-			this.children[1].setFill([0,0,0,0]);
+			this.children[2].setFill([0,0,0,0]);
 		}, 
 		_deactivateDotsCard: function(){
-			this.children[1].setFill("black");
+			this.children[2].setFill("black");
 		},
 		_activateBinaryCard: function(){
-			this.children[1].setShape({text: "1"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
+			this.children[2].setShape({text: "1"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
 		},
 		_deactivateBinaryCard: function(){
-			this.children[1].setShape({text: "0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
+			this.children[2].setShape({text: "0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
 		},
 
 		// _shrinkCard: function(card){

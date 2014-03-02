@@ -27,7 +27,9 @@ define([
 
 			this.time = (m == 0 ? "" : m > 10 ? "" : "0" + m + ":") + (s < 10 ? "0" : "")+s+"."+ms;
 
-			html.set(this.domNode, this.time);
+			if(this.domNode){
+				html.set(this.domNode, this.time);
+			}
 		},
 
 		start: function(){
