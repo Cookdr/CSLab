@@ -11,7 +11,13 @@
 						{"shape": "circle", "pattern": "outline", "color": "black"},
 						{"shape": "star", "pattern": "solid", "color": "red"},
 						{"shape": "square", "pattern": "solid", "color": "blue"},
-						{"shape": "star", "pattern": "outline", "color": "black"}
+						{"shape": "star", "pattern": "outline", "color": "black"},
+						{"shape": "circle", "pattern": "gradient", "color": "blue"},
+						{"shape": "square", "pattern": "gradient", "color": "red"},
+						{"shape": "circle", "pattern": "gradient", "color": "black"},
+						{"shape": "star", "pattern": "gradient", "color": "red"},
+						{"shape": "square", "pattern": "gradient", "color": "blue"},
+						{"shape": "star", "pattern": "gradient", "color": "black"}
 					], 
 				 	"flags":{
 				 		"shapes":"shapes"

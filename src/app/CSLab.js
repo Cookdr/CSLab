@@ -4,18 +4,24 @@ define([
 	"./activities/Boolean",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
+	"dojo/cookie",
 	"dojo/dom-construct",
 	"dojo/Deferred",
 	"dojo/router",
+	"dojo/topic",
+	"dijit/Dialog",
+	"dijit/form/Button",
+	"dijit/form/TextBox",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/CSLab.html"
-],function(ActivitySplash, Binary, Boolean, declare, lang, domConstruct, Deferred, router, _WidgetBase, _TemplatedMixin, template){
+],function(ActivitySplash, Binary, Boolean, declare, lang, cookie, domConstruct, Deferred, router, topic, Dialog, Button, TextBox, _WidgetBase, _TemplatedMixin, template){
 
 	return declare([_WidgetBase, _TemplatedMixin], {
 		//	set our template
 		templateString: template,
 		splash: null,
+		user: null,
 
 		_onClick: function(evt){
 			evt.preventDefault();
@@ -32,7 +38,47 @@ define([
 			this.splash.startup();
 		},
 
+		_getUserNamePopup: function(){
+			var pop, name, submit;
+
+			pop = new Dialog({
+				title: "Welcome!",
+				content: "Hello! It looks like it's your first time here, what's your name?<br/>"
+			});
+
+			name = new TextBox({
+				placeholder: "Name"
+			}).placeAt(pop.containerNode);
+
+			submit = new Button({
+				label: "Submit",
+				onClick: function(){
+					topic.publish("enteredUsername", name.get("value"));
+					pop.destroyRecursive();
+				}
+			}).placeAt(pop.containerNode);
+
+			pop.show();
+
+
+
+		},
+
+		_createCookie: function(name){
+			cookie("user", name, {});
+		},
+
 		startup: function(){
+			if(!this.user){
+				// no user yet, lets check the cookies
+				this.cookie = cookie("user");
+				if(!this.cookie){
+					topic.subscribe("enteredUsername", this._createCookie);
+					// first timer, let's setup a new user
+					this._getUserNamePopup();
+
+				}
+			}
 			domConstruct.empty(this.containerNode);
 			router.register("/binary/?(.*)", lang.hitch(this, function(evt){
 				if(this.splash && this.splash.activityName == "Binary"){

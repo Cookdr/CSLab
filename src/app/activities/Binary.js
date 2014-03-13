@@ -1,17 +1,20 @@
 define([
+	"./BinaryCard",
 	"app/Timer",
 	"dojo/_base/array",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/dom-construct",
+	"dojo/dom-class",
 	"dojo/html",
 	"dojo/on",
-	"dijit/form/TextBox",
+	"dojo/topic",
+	"dijit/form/NumberTextBox",
 	"dojox/gfx",
 	"dojox/gfx/fx",
 	"./_ActivityBase",
 	"dojo/text!./templates/Binary.html"
-],function(Timer, array, declare, lang, domConstruct, html, on, TextBox, gfx, gfxfx, _ActivityBase, template){
+],function(BinaryCard, Timer, array, declare, lang, domConstruct, domClass, html, on, topic, NumberTextBox, gfx, gfxfx, _ActivityBase, template){
 
 	return declare("app.activities.Binary",[_ActivityBase], {
 
@@ -44,63 +47,38 @@ define([
 				this.cards = null;
 			}
 			var i, card, cards = [];
-			for(i = 0; i <5; i++){
-				card = this.canvas.createGroup();
-				if(type == "dots"){
-					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setFill("white");
-					card.createImage({x:(400-i*100)+5, y:30, width:80, height:120, src:"app/resources/images/"+(i+1)+".png"});
-					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,1]);
-					card.activate = this._activateDotsCard;
-					card.deactivate = this._deactivateDotsCard;
-				}else if(type == "binary"){
-					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setFill("white");
-					card.createRect({x:(400-i*100)+5, y:30, width:80, height:120}).setStroke({style:'solid',color:'black',width:2}).setFill([0,0,0,0]);
-					card.createText({x:(400-i*100)+30, y:105, text:"0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
-					card.activate = this._activateBinaryCard;
-					card.deactivate = this._deactivateBinaryCard;
-				}
-				card.active = false;
-				card.type = type;
-				card.decVal = Math.pow(2,i);
-				if(clickable){
-					card.on("click", lang.hitch(this,this.toggleActive));
-				}
+			for(i = 4; i >= 0; i--){
+				card = new BinaryCard({
+						"type":type, 
+						"decVal": Math.pow(2,i),
+						"clickable":clickable,
+						updateActive: lang.hitch(this, this.updateActive)
+
+						}
+						).placeAt(this.containerNode);
+				card.startup();
 				cards.push(card);
 			}
 
 			this.cards = cards;
 		},
 
-		// Setup the cards to display a certain value;
-		displayNum: function(value){
-			var i;
-			for(i=this.cards.length-1; i >=0; i--){
-				if(this.cards[i].decVal <= value){
-					this.cards[i].active = true;
-					this.cards[i].activate();
-					value = value-this.cards[i].decVal;
-				}else{
-					if(this.cards[i].active){
-						this.cards[i].deactivate();
-					}
-					this.cards[i].active = false;
-				}
-			}
-		},
-
-		toggleActive: function(evt){
-			var card = evt.gfxTarget;
-			card.getParent().active = !card.getParent().active;
-
-			if(card.getParent().active){
-				card.getParent().activate();
-			}else{
-				card.getParent().deactivate();
-			}
-
+		updateActive: function(){
 			this.updateCurNum();
 		},
 
+		// Setup the cards to display a certain value;
+		displayNum: function(value){
+			var i;
+			for(i=0; i < this.cards.length; i++){
+				if(this.cards[i].decVal <= value){
+					this.cards[i].activate();
+					value = value-this.cards[i].decVal;
+				}else{
+					this.cards[i].deactivate();
+				}
+			}
+		},
 		updateCurNum: function(){
 			var i, index, curNum = 0;
 			for(i=0; i< this.cards.length; i++){
@@ -145,7 +123,7 @@ define([
 		},
 
 		startup: function(){
-			this.canvas = gfx.createSurface(this.gfxNode, 600, 200);
+			//topic.subscribe()
 			if(this.type == "DecToBin"){
 				this.updateSuccess = this.decToBinSuccess;
 				this.createCards(true, this.flags.cards);
@@ -156,7 +134,9 @@ define([
 				this.displayNum(this.data[0]);
 				html.set(this.instructionsNode, "Please enter the value displayed by the cards: ");
 				domConstruct.empty(this.curNumLabelNode);
-				this.decTxtBox = new TextBox({
+				this.decTxtBox = new NumberTextBox({
+												placeholder: "enter decimal value here",
+
 												onKeyUp:lang.hitch(this, function(){
 													if(this.binToDecSuccess(this.decTxtBox.get("value"))){
 														this.decTxtBox.set("value", "");
@@ -165,6 +145,8 @@ define([
 												intermediateChanges: true
 
 											}).placeAt(this.curNumLabelNode);
+
+				domClass.add(this.decTxtBox, "binaryDecTxtBox");
 				this.decTxtBox.focus();
 				this.updateSuccess = this.binToDecSuccess;
 			}
@@ -175,28 +157,6 @@ define([
 			}
 
 		},
-
-		_activateDotsCard: function(){
-			this.children[2].setFill([0,0,0,0]);
-		}, 
-		_deactivateDotsCard: function(){
-			this.children[2].setFill("black");
-		},
-		_activateBinaryCard: function(){
-			this.children[2].setShape({text: "1"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
-		},
-		_deactivateBinaryCard: function(){
-			this.children[2].setShape({text: "0"}).setFont({ family:"Arial", size:"36pt", weight:"bold" }).setFill("black");
-		},
-
-		// _shrinkCard: function(card){
-		// 	var animation = new gfxFx.animateTransform({
-		// 	    duration: 700,
-		// 	    shape: card,
-		// 	    transform: [{name: "scaleAt", start: [1, group.x, group.y],
-		// 	    end: [1, group.x/4, navGroupCenter.y]}]
-		// 	});
-		// },
 
 		_randArray: function(){
 			var i, arr = [];

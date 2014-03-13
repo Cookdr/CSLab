@@ -78,7 +78,7 @@ html, body{
 #sidebar{
 	clear:both;
 	padding-left:8px;
-	color:#balck;
+	color: black;
 	width:150px;
 	float:left;
 	background-color:#e2e2e2;
@@ -88,7 +88,7 @@ html, body{
 	border-radius: 15px;
 }
 #sidebar li a{
-	color:#black;
+	color: black;
 }
 .sidebarLevelWrapper{
 	padding-left:10px;
@@ -109,14 +109,78 @@ html, body{
 /*
 *  Boolean Activity CSS
 */
-.booleanPropertyCol{
+.booleanProps{
 	float:left;
-	background-color:#A3CFCD;
+	width:70%;
+	height:50px;
+	border-radius:15px;	
+	background-color:blue;
 }
-.booleanGfxNode{
+.booleanProp{
 	float:left;
+	line-height:50px;
 }
+.booleanOps{
+	float:left;
+	width:30%;
+	height:50px;
+	border-radius:15px;
+	background-color:red;
+}
+.booleanOp{
+	float:left;
+	line-height:50px;
+}
+
+.booleanStatement{
+	float:left;
+	width:100%;
+	height:50px;
+	border-radius:15px;
+	background-color:green;
+}
+.booleanShape{
+	float:left;
+	margin-left:10px;
+	margin-bottom:10px;
+}
+
 
 /*
 *  Binary Activity CSS
 */
+.binaryDecTxtBox{
+	padding:3px;
+	border-radius:5px;
+}
+.binaryCard{
+	width:80px;
+	height:120px;
+	text-align:center;
+	line-height:120px;
+	background-repeat: no-repeat;
+	float:left;
+	margin-left:10px;
+	border:1px solid black;
+	background-color:white;
+	font-size:36pt;
+	font-weight:bold;
+}
+.binaryCard1{
+	background-image:url(images/1.png);
+}
+.binaryCard2{
+	background-image:url(images/2.png);
+}
+.binaryCard4{
+	background-image:url(images/4.png);
+}
+.binaryCard8{
+	background-image:url(images/8.png);
+}
+.binaryCard16{
+	background-image:url(images/16.png);
+}
+.binaryCardDeactive{
+	background-image:url(images/deactivatedCard.png);
+}

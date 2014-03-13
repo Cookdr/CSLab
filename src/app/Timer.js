@@ -13,22 +13,22 @@ define([
 		//	set our template
 		templateString: template,
 		startTime: null,
-		time: null,
+		curTime: null,
 		timer: null,
 
 		_displayTime: function(){
-			var dur, ms, s, m;
+			var dur, ms, sec, mim;
 			// min:sec:ms
 			dur = new Date().getTime() - this.startTime.toString();
 
 			ms = (dur%100);
-			s = Math.floor((dur/1000)%60);
-			m = Math.floor((dur/60000)%60);
+			sec = Math.floor((dur/1000)%60);
+			min = Math.floor((dur/60000)%60);
 
-			this.time = (m == 0 ? "" : m > 10 ? "" : "0" + m + ":") + (s < 10 ? "0" : "")+s+"."+ms;
+			this.curTime = (min == 0 ? "" : min > 10 ? "" : "0" + min + ":") + (sec < 10 ? "0" : "")+sec+"."+ms;
 
 			if(this.domNode){
-				html.set(this.domNode, this.time);
+				html.set(this.domNode, this.curTime);
 			}
 		},
 
@@ -39,7 +39,7 @@ define([
 
 		stop: function(){
 			clearInterval(this.timer);
-			return this.time;
+			return this.curTime;
 		},
 	});
 });
