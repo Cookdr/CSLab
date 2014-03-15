@@ -125,7 +125,7 @@ html, body{
 	width:30%;
 	height:50px;
 	border-radius:15px;
-	background-color:red;
+	background-color:green;
 }
 .booleanOp{
 	float:left;
@@ -137,7 +137,7 @@ html, body{
 	width:100%;
 	height:50px;
 	border-radius:15px;
-	background-color:green;
+	background-color:red;
 }
 .booleanShape{
 	float:left;

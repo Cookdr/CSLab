@@ -40,6 +40,6 @@ define([
 		stop: function(){
 			clearInterval(this.timer);
 			return this.curTime;
-		},
+		}
 	});
 });

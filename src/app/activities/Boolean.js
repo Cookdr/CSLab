@@ -9,10 +9,11 @@ define([
 	"dojo/dnd/Source",
 	"dojo/topic",
 	"./BooleanShape",
+	"./BooleanDnDCreator",
 	"dojox/gfx",
 	"./_ActivityBase",
 	"dojo/text!./templates/Boolean.html"
-],function(declare, array, lang, aspect, domClass, domConstruct, domStyle, Source, topic, BooleanShape, gfx, _ActivityBase, template){
+],function(declare, array, lang, aspect, domClass, domConstruct, domStyle, Source, topic, BooleanShape, DnDCreator, gfx, _ActivityBase, template){
 
 	return declare("app.activities.Boolean",[_ActivityBase], {
 		//	set our template
@@ -20,6 +21,7 @@ define([
 		name: "Boolean",
 		canvas: null,
 		objects: [],
+		dndUtil: new DnDCreator(),
 		// property/value objects to be hidden ex: {prop: "pattern", val: "solid"}
 		hiddenProps: [],
 		// SHAPES: shape (circle, square, star?), pattern(solid, outline, striped), color(black, red, blue)
@@ -50,7 +52,7 @@ define([
 			for(prop in propList){
 				propDiv = domConstruct.create('div', {innerHTML: prop+": "}, this.propertyColNode);
 				array.forEach(propList[prop], lang.hitch(this, function(item){
-					arr.push({data: item, type:["booleanProp"]});
+					arr.push({data: this._getPropData(prop, item), type:["booleanProp"]});
 				}));
 			}
 
@@ -66,26 +68,13 @@ define([
 			}
 		},
 
-		refreshShapes: function(){
-			var i, baseX, baseY, translateX, translateY, counter, shape;
-			counter = 0;
-			for(i=0; i < this.objects.length; i++){
-				shape = this.objects[i];
-				baseX = (counter%6)*100+5;
-				baseY = Math.floor(counter/6)*125+5;
-				if(shape.active){
-					translateX = baseX - shape.oldPos.x;
-					translateY = baseY - shape.oldPos.y;
-					console.log(shape.oldPos.x+","+shape.oldPos.y+" -> "+baseX+","+baseY+" = "+translateX+","+translateY);
-					shape.applyTransform([gfx.matrix.translate(translateX, translateY)]);
-					shape.oldPos.x += translateX;
-					shape.oldPos.y += translateY;
-
-					counter++;
+		refreshShapes: function(mask){
+			var i;
+			for(i = 0; i < mask.length; i++){
+				if(mask[i]){
+					this.objects[i].hide();
 				}else{
-					shape.applyTransform([gfx.matrix.translate(-1000, -1000)]);
-					shape.oldPos.x -= 1000;
-					shape.oldPos.y -= 1000;
+					this.objects[i].show();
 				}
 			}
 		},
@@ -95,24 +84,65 @@ define([
 		},
 
 		_updateStatement: function(args){
-			var i, term, terms, node, nodes = this._booleanStatementArea.getAllNodes();
+			var i, term, terms, node, nodes = this._booleanStatementArea.getAllNodes(),
+			map = this._booleanStatementArea.map;
 			terms = []
+
+			// If I find that the nodes aren't already sorted by left position
+			// so probably when I started recursively finding the nodes if I 
+			// do grouping
+			// nodes.sort(function(a, b){
+			//     var keyA = a.getBoundingClientRect()["left"],
+			//     keyB = b.getBoundingClientRect()["left"];
+			//     // Compare the 2 dates
+			//     if(keyA < keyB) return -1;
+			//     if(keyA > keyB) return 1;
+			//     return 0;
+			// });
 
 			for(i=0; i < nodes.length; i++){
 				node = nodes[i];
-				text = node.innerHTML;
-				type = this._getTermType(text);
-				term = {type: type, text: text};
+				text = map[node.id].data.specProp || map[node.id].data.data;
+				type = map[node.id].type[0];
+				mask = map[node.id].data.hideIndexes || null;
+				term = {type: type, text: text, mask: mask};
 				terms.push(term);
 			}
 
-			this._evalutateStatment(terms);
+			this._evaluateStatement(terms);
 
 			//this.refreshShapes();
 		},
 
 		_evaluateStatement: function(terms){
-			
+			var result;
+			if(terms.length == 3){
+				result = this._evalExp(terms[0].mask, terms[1].text, terms[2].mask);
+				this.refreshShapes(result);
+			}
+		},
+
+		_evalExp: function(mask1, op, mask2){
+			var i, result = [];
+			switch(op){
+				case "AND":
+							for(i=0; i < mask1.length; i++){
+								result.push(mask1[i] && mask2[i]);
+							}
+				break;
+				case "OR":
+							for(i=0; i < mask2.length; i++){
+								result.push(mask1[i] || mask2[i]);
+							}
+				break;
+				case "NOT":
+							for(i=0; i < mask1.length; i++){
+								result.push(!mask2[i]);
+							}
+				break;
+			}
+
+			return result;
 		},
 
 		_getTermType: function(term){
@@ -123,30 +153,44 @@ define([
 			}
 		},
 
-		startup: function(){
-			this._booleanStatementArea =  new Source(this.booleanStatementNode, {accept: ["booleanProp", "booleanOp"], horizontal: true});
-			this._booleanOpArea = new Source(this.booleanOpNode, {accept: ["booleanOp"], copyOnly:true, horizontal: true});
-			this._booleanPropArea = new Source(this.booleanPropNode, {accept: ["booleanProp"], copyOnly:true, horizontal: true});
-			this._booleanPropArea.insertNodes(false, this.createPropItems(this._shapePropList));
-			this._booleanPropArea.forInItems(function(item, id, map){
-				domClass.add(id, item.type[0]);
+		// want to create the bitstring for indexes hidden by this prop ("blue", solid etc)
+		// should be an object like {prop: prop, hideProps: hiddenProps}
+		_getPropData: function(prop, specProp){
+			var propData = {
+				prop: prop,
+				specProp: specProp,
+				hideIndexes: new Array()
+			}
+			array.forEach(this.objects, function(obj){
+				if(obj.props[prop] == specProp){
+					propData.hideIndexes.push(true);
+				}else{
+					propData.hideIndexes.push(false);
+				}
 			});
-			this._booleanOpArea.insertNodes(false, [
+
+			return propData;
+		},
+
+		startup: function(){
+			if(this.flags.shapes=="shapes"){
+				this.createShapes();
+			}
+			this._booleanStatementArea =  new Source(this.booleanStatementNode, {accept: ["booleanProp", "booleanOp"], horizontal: true});
+			this.dndUtil.buildProps(this.booleanPropNode, this.createPropItems(this._shapePropList), true);
+			this.dndUtil.buildOps(this.booleanOpNode,[
 					{data:"AND", type: ["booleanOp"]},
 					{data:"OR", type: ["booleanOp"]},
 					{data:"NOT", type: ["booleanOp"]},
 					{data: "GROUP", type:["booleanOp", "group"]}
-				]);
-			this._booleanOpArea.forInItems(function(item, id, map){
-				domClass.add(id, item.type[0]);
-			});
+				], true);
+			// this._booleanOpArea.forInItems(function(item, id, map){
+			// 	domClass.add(id, item.type[0]);
+			// });
 
 			aspect.after(this._booleanStatementArea, "onDrop" ,function(){
 				topic.publish("statementChanged");
 			});
-			if(this.flags.shapes=="shapes"){
-				this.createShapes();
-			}
 		}
 	});
 });

@@ -7,6 +7,7 @@ define([
 	"dojo/cookie",
 	"dojo/dom-construct",
 	"dojo/Deferred",
+	"dojo/json",
 	"dojo/router",
 	"dojo/topic",
 	"dijit/Dialog",
@@ -15,7 +16,7 @@ define([
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/CSLab.html"
-],function(ActivitySplash, Binary, Boolean, declare, lang, cookie, domConstruct, Deferred, router, topic, Dialog, Button, TextBox, _WidgetBase, _TemplatedMixin, template){
+],function(ActivitySplash, Binary, Boolean, declare, lang, cookie, domConstruct, Deferred, json, router, topic, Dialog, Button, TextBox, _WidgetBase, _TemplatedMixin, template){
 
 	return declare([_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -65,18 +66,20 @@ define([
 		},
 
 		_createCookie: function(name){
-			cookie("user", name, {});
+			cookie("profile", json.stringify({"name":name, date: new Date()}), {});
 		},
 
 		startup: function(){
 			if(!this.user){
 				// no user yet, lets check the cookies
-				this.cookie = cookie("user");
-				if(!this.cookie){
+				this.user = cookie("profile");
+				if(!this.user){
 					topic.subscribe("enteredUsername", this._createCookie);
 					// first timer, let's setup a new user
 					this._getUserNamePopup();
-
+				}else{
+					// got a cookie
+					this.user = json.parse(this.user);
 				}
 			}
 			domConstruct.empty(this.containerNode);

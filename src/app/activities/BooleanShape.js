@@ -26,6 +26,19 @@ define([
 			this.props = args.props;
 		},
 
+		hide: function(){
+			if(this.active){
+				this.containerNode.style.display = 'none';
+				this.active = false;
+			}
+		},
+
+		show: function(){
+			if(!this.active){
+				this.containerNode.style.display = 'block';
+				this.active = true;
+			}
+		},
 
 		_drawShape: function(){
 			var i, shape, prop;
@@ -85,6 +98,7 @@ define([
 
 			return shape;
 		},
+
 
 		startup: function(){
 			this.canvas = gfx.createSurface(this.gfxNode, 100, 100);
