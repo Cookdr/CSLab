@@ -8,12 +8,16 @@ define([
 	"dojo/dom-style",
 	"dojo/dnd/Source",
 	"dojo/topic",
+	"dijit/form/Button",
 	"./BooleanShape",
+	"./BooleanStatementBox",
+	"./BooleanStatementSource",
 	"./BooleanDnDCreator",
+	"./BooleanLogic",
 	"dojox/gfx",
 	"./_ActivityBase",
 	"dojo/text!./templates/Boolean.html"
-],function(declare, array, lang, aspect, domClass, domConstruct, domStyle, Source, topic, BooleanShape, DnDCreator, gfx, _ActivityBase, template){
+],function(declare, array, lang, aspect, domClass, domConstruct, domStyle, Source, topic, Button, BooleanShape, BooleanStatementBox, BooleanStatementSource, dndUtil, booleanLogic, gfx, _ActivityBase, template){
 
 	return declare("app.activities.Boolean",[_ActivityBase], {
 		//	set our template
@@ -21,7 +25,6 @@ define([
 		name: "Boolean",
 		canvas: null,
 		objects: [],
-		dndUtil: new DnDCreator(),
 		// property/value objects to be hidden ex: {prop: "pattern", val: "solid"}
 		hiddenProps: [],
 		// SHAPES: shape (circle, square, star?), pattern(solid, outline, striped), color(black, red, blue)
@@ -79,12 +82,16 @@ define([
 			}
 		},
 
+		_addStatementBox: function(){
+			new BooleanStatementBox().placeAt(this.addlBooleanStatementsNode);
+		},
+
 		_randArray: function(){
 			return [];
 		},
 
 		_updateStatement: function(args){
-			var i, term, terms, node, nodes = this._booleanStatementArea.getAllNodes(),
+			var i, term, terms, result, node, nodes = this._booleanStatementArea.getAllNodes(),
 			map = this._booleanStatementArea.map;
 			terms = []
 
@@ -109,50 +116,11 @@ define([
 				terms.push(term);
 			}
 
-			this._evaluateStatement(terms);
+			result = booleanLogic.evaluateStatement(terms);
 
-			//this.refreshShapes();
+			this.refreshShapes(result);
 		},
-
-		_evaluateStatement: function(terms){
-			var result;
-			if(terms.length == 3){
-				result = this._evalExp(terms[0].mask, terms[1].text, terms[2].mask);
-				this.refreshShapes(result);
-			}
-		},
-
-		_evalExp: function(mask1, op, mask2){
-			var i, result = [];
-			switch(op){
-				case "AND":
-							for(i=0; i < mask1.length; i++){
-								result.push(mask1[i] && mask2[i]);
-							}
-				break;
-				case "OR":
-							for(i=0; i < mask2.length; i++){
-								result.push(mask1[i] || mask2[i]);
-							}
-				break;
-				case "NOT":
-							for(i=0; i < mask1.length; i++){
-								result.push(!mask2[i]);
-							}
-				break;
-			}
-
-			return result;
-		},
-
-		_getTermType: function(term){
-			if(this._opList.indexOf(term) >-1){
-				return "operator";
-			}else{
-				return "operand";
-			}
-		},
-
+		
 		// want to create the bitstring for indexes hidden by this prop ("blue", solid etc)
 		// should be an object like {prop: prop, hideProps: hiddenProps}
 		_getPropData: function(prop, specProp){
@@ -173,24 +141,34 @@ define([
 		},
 
 		startup: function(){
-			if(this.flags.shapes=="shapes"){
-				this.createShapes();
-			}
-			this._booleanStatementArea =  new Source(this.booleanStatementNode, {accept: ["booleanProp", "booleanOp"], horizontal: true});
-			this.dndUtil.buildProps(this.booleanPropNode, this.createPropItems(this._shapePropList), true);
-			this.dndUtil.buildOps(this.booleanOpNode,[
-					{data:"AND", type: ["booleanOp"]},
-					{data:"OR", type: ["booleanOp"]},
-					{data:"NOT", type: ["booleanOp"]},
-					{data: "GROUP", type:["booleanOp", "group"]}
-				], true);
-			// this._booleanOpArea.forInItems(function(item, id, map){
-			// 	domClass.add(id, item.type[0]);
-			// });
 
-			aspect.after(this._booleanStatementArea, "onDrop" ,function(){
-				topic.publish("statementChanged");
-			});
+			if(this.type === "pickOne"){
+				if(this.flags.shapes=="shapes"){
+					this.createShapes();
+				}
+				this._booleanStatementArea =  new BooleanStatementSource(this.booleanStatementNode, {
+					accept: ["booleanProp"], 
+					horizontal: true
+				});
+				new Button({
+					label: "Add Clause",
+					onClick: lang.hitch(this, this._addStatementBox)
+				}).placeAt(this.addlBooleanStatementsNode);
+				dndUtil.buildProps(this.booleanPropNode, this.createPropItems(this._shapePropList), true);
+				dndUtil.buildOps(this.booleanOpNode,[
+						{data:"AND", type: ["booleanOp"]},
+						{data:"OR", type: ["booleanOp"]},
+						{data:"NOT", type: ["booleanOp", "booleanProp"]},
+						{data: "GROUP", type:["booleanOp", "group"]}
+					], true);
+				// this._booleanOpArea.forInItems(function(item, id, map){
+				// 	domClass.add(id, item.type[0]);
+				// });
+
+				aspect.after(this._booleanStatementArea, "onDrop" ,function(){
+					topic.publish("statementChanged");
+				});
+			}
 		}
 	});
 });

@@ -131,10 +131,33 @@ html, body{
 	float:left;
 	line-height:50px;
 }
+.addlBooleanOp{
+	float:left;
+	height:50px;
+	min-width:50px;
+	background-color:green;
+}
 
 .booleanStatement{
 	float:left;
 	width:100%;
+	height:50px;
+	border-radius:15px;
+	background-color:red;
+	clear:both;
+}
+.booleanStatementBox{
+	float:left;
+	clear:both;
+	min-width:300px;
+	margin-top:10px;
+}
+.addlBooleanStatements{
+	background-color:rgb(160,0,0);
+}
+.addlBooleanStatement{
+	float:left;
+	width:75%;
 	height:50px;
 	border-radius:15px;
 	background-color:red;
