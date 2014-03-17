@@ -16,7 +16,6 @@
 html, body{
 	height: 100%;
 	width: 100%;
-	overflow: hidden;
 	background-image:url(images/bg.gif);
 	text-align: center;
 }
@@ -114,58 +113,88 @@ html, body{
 	width:70%;
 	height:50px;
 	border-radius:15px;	
-	background-color:blue;
+	background-color:#69E07F;
 }
-.booleanProp{
+.booleanProp.dojoDndItemOver{
+	margin: 0px 1px;
+	padding:0px 7px;
 	float:left;
+	border-radius:10px;
 	line-height:50px;
+	background-color:#BDEDB9;
+}
+.booleanProp, .booleanProp.dojoDndItemAnchor{
+	margin: 0px 1px;
+	padding:0px 8px;
+	float:left;
+	border-radius:10px;
+	line-height:50px;
+	background-color:#BDEDB9;
+	background-image:none;
+	border:none;
 }
 .booleanOps{
 	float:left;
 	width:30%;
 	height:50px;
 	border-radius:15px;
-	background-color:green;
+	background-color:#6989E0;
 }
-.booleanOp{
+.booleanOp, .booleanOp.dojoDndItemAnchor{
+	margin: 0px 1px;
+	padding: 0px 8px;
 	float:left;
 	line-height:50px;
+	border-radius:10px;
+	background-color:#B9C7ED;
+}
+.booleanOp.dojoDndItemOver{
+	margin: 0px 1px;
+	padding: 0px 7px;
+	float:left;
+	line-height:50px;
+	border-radius:10px;
+	background-color:#B9C7ED;
 }
 .addlBooleanOp{
 	float:left;
 	height:50px;
 	min-width:50px;
-	background-color:green;
+	background-color:#6989E0;
+	border-radius:10px;
 }
 
 .booleanStatement{
 	float:left;
 	width:100%;
 	height:50px;
-	border-radius:15px;
-	background-color:red;
+	border-radius:10px;
+	background-color:#E06969;
 	clear:both;
 }
 .booleanStatementBox{
 	float:left;
 	clear:both;
-	min-width:300px;
-	margin-top:10px;
+	min-width:400px;
+	margin-top:5px;
 }
 .addlBooleanStatements{
 	background-color:rgb(160,0,0);
 }
 .addlBooleanStatement{
 	float:left;
-	width:75%;
+	min-width:300px;
 	height:50px;
-	border-radius:15px;
-	background-color:red;
+	border-radius:10px;
+	background-color:#E06969;
 }
 .booleanShape{
 	float:left;
 	margin-left:10px;
 	margin-bottom:10px;
+	box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
 }
 
 

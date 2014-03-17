@@ -34,8 +34,7 @@ define([
 		_shapePropList: {"shape":["circle", "square", "star"], "pattern": ["solid", "outline", "gradient"], "color": ["blue", "black", "red"]},
 		_opList: ["AND", "OR", "NOT", "GROUP"],
 		_booleanStatementArea: "",
-		_booleanPropArea: "",
-		_booleanOpArea: "",
+		_additionalStatements: [],
 
 		constructor: function(problem){
 			this.problem = problem;
@@ -62,13 +61,30 @@ define([
 			return arr;
 		},
 
-		createShapes: function(){
+		createShapes: function(shapes){
 			var i, shape;
-			for(i=0; i < this.data.length; i++){
-				shape = new BooleanShape({type: this.flags.shapes, props: this.data[i]}).placeAt(this.objectsNode);
+			for(i=0; i < shapes.length; i++){
+				shape = new BooleanShape({type: this.flags.shapes, props: shapes[i]}).placeAt(this.objectsNode);
 				shape.startup();
 				this.objects.push(shape);
 			}
+		},
+
+		createAllShapes: function(){
+			var i,j,k, shapes = this._shapePropList.shape,
+			patterns = this._shapePropList.pattern,
+			colors = this._shapePropList.color, arr = [];
+			for(i=0; i < shapes.length; i++){
+				for(j=0; j < patterns.length; j++){
+					for(k=0; k < colors.length; k++){
+						arr.push({shape: shapes[i], pattern: patterns[j], color: colors[k]});
+					}
+				}	
+			}
+
+			arr = this._randomizeArray(arr);
+
+			this.createShapes(arr);
 		},
 
 		refreshShapes: function(mask){
@@ -83,7 +99,7 @@ define([
 		},
 
 		_addStatementBox: function(){
-			new BooleanStatementBox().placeAt(this.addlBooleanStatementsNode);
+			this._additionalStatements.push(new BooleanStatementBox().placeAt(this.addlBooleanStatementsNode));
 		},
 
 		_randArray: function(){
@@ -91,36 +107,30 @@ define([
 		},
 
 		_updateStatement: function(args){
-			var i, term, terms, result, node, nodes = this._booleanStatementArea.getAllNodes(),
+			var terms, nodes = this._booleanStatementArea.getAllNodes(),
 			map = this._booleanStatementArea.map;
-			terms = []
 
-			// If I find that the nodes aren't already sorted by left position
-			// so probably when I started recursively finding the nodes if I 
-			// do grouping
-			// nodes.sort(function(a, b){
-			//     var keyA = a.getBoundingClientRect()["left"],
-			//     keyB = b.getBoundingClientRect()["left"];
-			//     // Compare the 2 dates
-			//     if(keyA < keyB) return -1;
-			//     if(keyA > keyB) return 1;
-			//     return 0;
-			// });
+			terms = booleanLogic.getTerms(map, nodes);
 
-			for(i=0; i < nodes.length; i++){
-				node = nodes[i];
-				text = map[node.id].data.specProp || map[node.id].data.data;
-				type = map[node.id].type[0];
-				mask = map[node.id].data.hideIndexes || null;
-				term = {type: type, text: text, mask: mask};
-				terms.push(term);
+			result = booleanLogic.evalStatement(terms);
+
+			// Gets us the result of the base boolean statement.
+			// now we add add in any additional clauses
+			for(i=0; i < this._additionalStatements.length; i++){
+				var sndResult, addlClause;
+				addlClause = this._additionalStatements[i];
+				sndResult = booleanLogic.evalStatement(addlClause.getTerms());
+
+				if(sndResult){
+					result = booleanLogic.evalExp(result, addlClause.getOp(), sndResult);
+				}
 			}
 
-			result = booleanLogic.evaluateStatement(terms);
-
-			this.refreshShapes(result);
+			if(result){
+				this.refreshShapes(result);
+			}
 		},
-		
+
 		// want to create the bitstring for indexes hidden by this prop ("blue", solid etc)
 		// should be an object like {prop: prop, hideProps: hiddenProps}
 		_getPropData: function(prop, specProp){
@@ -140,11 +150,24 @@ define([
 			return propData;
 		},
 
+		_randomizeArray: function(arr){
+			var i, tmp, rin;
+
+			for(i=0; i < arr.length; i++){
+				rin = Math.floor(Math.random()*arr.length)
+				tmp = arr[i];
+				arr[i] = arr[rin];
+				arr[rin] = tmp;
+			}
+
+			return arr;
+		},
+
 		startup: function(){
 
 			if(this.type === "pickOne"){
 				if(this.flags.shapes=="shapes"){
-					this.createShapes();
+					this.createAllShapes();
 				}
 				this._booleanStatementArea =  new BooleanStatementSource(this.booleanStatementNode, {
 					accept: ["booleanProp"], 
@@ -158,8 +181,7 @@ define([
 				dndUtil.buildOps(this.booleanOpNode,[
 						{data:"AND", type: ["booleanOp"]},
 						{data:"OR", type: ["booleanOp"]},
-						{data:"NOT", type: ["booleanOp", "booleanProp"]},
-						{data: "GROUP", type:["booleanOp", "group"]}
+						{data:"NOT", type: ["booleanOp", "booleanProp"]}
 					], true);
 				// this._booleanOpArea.forInItems(function(item, id, map){
 				// 	domClass.add(id, item.type[0]);

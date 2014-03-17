@@ -32,7 +32,6 @@ define([
 				// ensure that only copy operations ever occur from this source
 				copyOnly: true,
 				accept: ["booleanOp"],
-				copyOnly:true, 
 				horizontal: true,
 				singular: true,
 
@@ -77,13 +76,12 @@ define([
 				// ensure that only copy operations ever occur from this source
 				copyOnly: true,
 				accept: ["booleanProp"],
-				copyOnly:true, 
 				horizontal: true,
 				singular: true,
 
 				// define whether or not this source will accept drops from itself, based on the value passed into
 				// buildCatalog; defaults to true, since this is the default that dojo/dnd uses
-				selfAccept: selfAccept === undefined ? true : selfAccept,
+				selfAccept: false,
 
 				// use catalogNodeCreator as our creator function for inserting new nodes
 				creator: this.booleanPropCreator

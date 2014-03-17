@@ -5,14 +5,15 @@ define([
 	"dojo/dom-class",
 	"dojo/dom-style",
 	"dojo/dnd/Source",
-	"dojo/on",
+	"dojo/aspect",
 	"dojo/topic",
 	"dijit/form/Button",
 	"./BooleanStatementSource",
+	"./BooleanLogic",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/BooleanStatementBox.html"
-],function(declare, lang, domConstruct, domClass, domStyle, Source, on, topic, Button, BooleanStatementSource, _WidgetBase, _TemplatedMixin, template){
+],function(declare, lang, domConstruct, domClass, domStyle, Source, aspect, topic, Button, BooleanStatementSource, booleanLogic, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.BooleanStatementBox",[_WidgetBase, _TemplatedMixin], {
 
@@ -20,6 +21,15 @@ define([
 		templateString: template,
 		op: null,
 		statement: null,
+
+		getTerms: function(){
+			return booleanLogic.getTerms(this.statement.map, this.statement.getAllNodes());
+		},
+
+		getOp: function(){
+			var node = this.op.getItem(this.op.getAllNodes()[0].id);
+			return node.data.specProp || node.data.data;
+		},
 
 		postCreate: function(){
 			this.op = new Source(this.booleanOpNode, {
@@ -32,11 +42,16 @@ define([
 							});
 
 			new Button({
-				label: "Clear",
+				label: "Remove",
 				onClick: lang.hitch(this, function(){
+					this.destroyRecursive();
+					topic.publish("statementChanged");
+				})
+			}).placeAt(this.clearStatementsNode);
 
-				}, this.clearStatementsNode)
-			})
+			aspect.after(this.statement, "onDrop" ,function(){
+				topic.publish("statementChanged");
+			});
 		}
 	});
 });

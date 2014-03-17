@@ -28,14 +28,14 @@ define([
 
 		hide: function(){
 			if(this.active){
-				this.containerNode.style.display = 'none';
+				this.containerNode.style.backgroundColor = '#DEB4B4';
 				this.active = false;
 			}
 		},
 
 		show: function(){
 			if(!this.active){
-				this.containerNode.style.display = 'block';
+				this.containerNode.style.backgroundColor = 'transparent';
 				this.active = true;
 			}
 		},
