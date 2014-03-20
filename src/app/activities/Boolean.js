@@ -47,6 +47,7 @@ define([
 			}
 
 			topic.subscribe("statementChanged", lang.hitch(this, this._updateStatement));
+			topic.subscribe("statementAdded", lang.hitch(this, this._addStatementBox));
 		},
 
 		createPropItems: function(propList){
@@ -173,10 +174,7 @@ define([
 					accept: ["booleanProp"], 
 					horizontal: true
 				});
-				new Button({
-					label: "Add Clause",
-					onClick: lang.hitch(this, this._addStatementBox)
-				}).placeAt(this.addlBooleanStatementsNode);
+				this._addStatementBox();
 				dndUtil.buildProps(this.booleanPropNode, this.createPropItems(this._shapePropList), true);
 				dndUtil.buildOps(this.booleanOpNode,[
 						{data:"AND", type: ["booleanOp"]},

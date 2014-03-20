@@ -66,7 +66,7 @@ define([
 		},
 
 		_createCookie: function(name){
-			cookie("profile", json.stringify({"name":name, date: new Date()}), {});
+			cookie("profile", json.stringify({"name":name, date: new Date()}), {expires:5*365});
 		},
 
 		startup: function(){

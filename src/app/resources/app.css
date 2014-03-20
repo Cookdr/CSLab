@@ -22,7 +22,7 @@ html, body{
 .csLab{
 	display: inline-block;
 	text-align: left;
-	width:80%;
+	width:95%;
 }
 #headerWrapper{
 	margin:0 auto;
@@ -93,7 +93,7 @@ html, body{
 	padding-left:10px;
 }
 #activityWrapper{
-	width:70%;
+	width:80%;
 	min-width:600px;
 	float:left;
 	padding:8px;
@@ -108,53 +108,61 @@ html, body{
 /*
 *  Boolean Activity CSS
 */
-.booleanProps{
+.statementContainer{
 	float:left;
-	width:70%;
 	height:50px;
-	border-radius:15px;	
+	padding:0px 10px;
+	border-radius: 15px;
+	-moz-border-radius:15px;
+	-webkit-border-radius:15px;
+}
+.booleanProps{
+	margin:2px;
 	background-color:#69E07F;
+	border:1px solid #34703F;
 }
-.booleanProp.dojoDndItemOver{
-	margin: 0px 1px;
-	padding:0px 7px;
-	float:left;
-	border-radius:10px;
-	line-height:50px;
-	background-color:#BDEDB9;
-}
-.booleanProp, .booleanProp.dojoDndItemAnchor{
-	margin: 0px 1px;
+
+.booleanProp, .booleanProp.dojoDndItem, .booleanProp.dojoDndItemOver{
+	margin: 10px 1px 0px 1px;
 	padding:0px 8px;
 	float:left;
 	border-radius:10px;
-	line-height:50px;
+	line-height:30px;
 	background-color:#BDEDB9;
+	border:1px solid #7CA178;
+}
+.booleanProp.dojoDndItemAnchor{
 	background-image:none;
-	border:none;
+	padding:0px 8px;
+	float:left;
+	border-radius:10px;
+	line-height:30px;
+	background-color:#BDEDB9;
+	border:1px solid #7CA178;
 }
 .booleanOps{
-	float:left;
-	width:30%;
-	height:50px;
-	border-radius:15px;
+	margin:2px;
 	background-color:#6989E0;
+	border: 1px solid #344470;
 }
-.booleanOp, .booleanOp.dojoDndItemAnchor{
-	margin: 0px 1px;
+.booleanOp, .booleanOp.dojoDndItem, .booleanOp.dojoDndItemAnchor, .booleanOp.dojoDndItemOver{
+	margin: 10px 1px 0px 1px;
 	padding: 0px 8px;
 	float:left;
-	line-height:50px;
+	line-height:30px;
 	border-radius:10px;
 	background-color:#B9C7ED;
+	border: 1px solid #59647D ;
 }
-.booleanOp.dojoDndItemOver{
-	margin: 0px 1px;
-	padding: 0px 7px;
+.booleanOp.dojoDndItemAnchor{
+	margin: 10px 1px 0px 1px;
+	padding: 0px 8px;
 	float:left;
-	line-height:50px;
+	line-height:30px;
 	border-radius:10px;
 	background-color:#B9C7ED;
+	border: 1px solid #59647D ;
+	background-image:none;
 }
 .addlBooleanOp{
 	float:left;
@@ -165,12 +173,11 @@ html, body{
 }
 
 .booleanStatement{
-	float:left;
-	width:100%;
-	height:50px;
-	border-radius:10px;
+	min-width:300px;
+	padding-right:50px;
 	background-color:#E06969;
 	clear:both;
+	border:1px solid #703535;
 }
 .booleanStatementBox{
 	float:left;

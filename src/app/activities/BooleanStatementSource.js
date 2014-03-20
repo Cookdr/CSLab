@@ -1,10 +1,11 @@
 define([
 	"dojo/_base/declare",
+	"dojo/_base/array",
 	"dojo/_base/lang",
 	"dojo/dom-class",
 	"dojo/dnd/Source",
 	"dojo/dnd/Selector"
-],function(declare, lang, domClass, Source, Selector){
+],function(declare, array, lang, domClass, Source, Selector){
 
 	return declare("app.activities.BooleanStatementSource",[Source], {
 		insertNodes: function(addSelected, data, before, anchor){
@@ -22,10 +23,10 @@ define([
 		var oldCreator = this._normalizedCreator;
 		var nodeType = domClass.contains(data[0], "booleanProp") ? "booleanProp" : "booleanOp";
 		var nodes = this.getAllNodes();
-		if(nodes.length && this.getItem(nodes[nodes.length-1].id).type[0] === nodeType){
-			this.onDndCancel();
-			return this;
-		}else{
+		// if(nodes.length && this.getItem(nodes[nodes.length-1].id).type[0] === nodeType){
+		// 	this.onDndCancel();
+		// 	return this;
+		// }else{
 			this.accept = nodeType === "booleanProp" ? {booleanOp:1} : {booleanProp:1};
 			this._normalizedCreator = function(item, hint){
 				var t = oldCreator.call(this, item, hint);
@@ -48,7 +49,7 @@ define([
 			Selector.superclass.insertNodes.call(this, data, before, anchor);
 			this._normalizedCreator = oldCreator;
 			return this;	// self
-		}
+		// }
 	},
 
 	checkAcceptance: function(source, nodes){
@@ -58,11 +59,17 @@ define([
 		//		the source which provides items
 		// nodes: Array
 		//		the list of transferred items
+		var isNot, notCounter, j, curNodes = this.getAllNodes();
 		if(this == source){
 			return !this.copyOnly || this.selfAccept;
 		}
 		for(var i = 0; i < nodes.length; ++i){
-			var type = source.getItem(nodes[i].id).type;
+			var node = source.getItem(nodes[i].id);
+			var type = node.type;
+			var text = node.data.specProp || node.data.data;
+			if(text === "NOT"){
+				isNot = true;
+			}
 			// type instanceof Array
 			var flag = false;
 			for(var j = 0; j < type.length; ++j){
@@ -71,9 +78,20 @@ define([
 					break;
 				}
 			}
-			if(!flag || this.getAllNodes().length > 2){
+			if(!flag){
 				return false;	// Boolean
 			}
+		}
+
+		for(j = 0; j < curNodes.length; j++){
+			var node = this.getItem(curNodes[j].id);
+			var text = node.data.specProp || node.data.data;
+			if(text === "NOT"){ 
+				notCounter++;
+			}
+		}
+		if(!isNot && (curNodes.length - notCounter) >3){
+			return false;
 		}
 		return true;	// Boolean
 	}

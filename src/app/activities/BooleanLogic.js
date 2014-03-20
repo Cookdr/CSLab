@@ -4,32 +4,53 @@ define([
 
 	var booleanLogic = {
 		evalStatement: function(terms){
-			switch(terms.length){
-				case 1:
-					if(terms[0].text !== "NOT"){
-						return terms[0].mask;
-					}else{
-						return null;
-					}
-				break;
-				case 2: if(terms[0].text === "NOT"){
-							return this.evalExp(null, terms[0].text, terms[1].mask);
+			var term, curMask, nextOp;
+
+			while(terms.length > 0){
+				term = terms.shift();
+				if(term.type === "booleanOp"){
+					if(term.text === "NOT"){
+						var odd = true, done = false;
+						while(!done){
+							if(terms.length > 0){
+								term = terms.shift();
+								if(term.text === "NOT"){
+									odd = !odd;
+								}else{
+									done = true;
+								}
+							}else{
+								return null;
+							}
+						}
+						if(odd){
+							if(nextOp){
+								curMask = this.evalExp(curMask, nextOp, this.evalExp(null, "NOT", term.mask));
+							}else{
+								curMask = this.evalExp(null, "NOT", term.mask);
+							}
 						}else{
-							return terms[0].mask;
+							if(nextOp){
+								curMask = this.evalExp(curMask, nextOp, term.mask);
+							}else{
+								curMask = term.mask;
+							}
 						}
-				break;
-				case 3:
-						if(terms[0].text === "NOT" && terms[1].text === "NOT"){
-							return this.evalExp(null, terms[0].text, this.evalExp(null, terms[0].text, terms[2].mask));
-						}else if(terms[1].text === "NOT"){
-							return this.evalExp(terms[0].mask, "AND", this.evalExp(null, terms[1].text, terms[2].mask));
-						}
-						return this.evalExp(terms[0].mask, terms[1].text, terms[2].mask);
-				break;
-				default:
-					return null;
-				break;
+						nextOp = null;
+					}else{
+						// Ops other then NOT
+						nextOp = term.text;
+					}
+				}else{
+					// booleanProp
+					if(nextOp){
+						curMask = this.evalExp(curMask, nextOp, term.mask);
+					}else{
+						curMask = term.mask;
+					}
+				}
 			}
+			return curMask;
 		},
 
 		evalExp: function(mask1, op, mask2){

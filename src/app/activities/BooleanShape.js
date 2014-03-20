@@ -28,14 +28,16 @@ define([
 
 		hide: function(){
 			if(this.active){
-				this.containerNode.style.backgroundColor = '#DEB4B4';
+				// this.containerNode.style.backgroundColor = '#DEB4B4';
+				this.containerNode.style.opacity = '.25';
 				this.active = false;
 			}
 		},
 
 		show: function(){
 			if(!this.active){
-				this.containerNode.style.backgroundColor = 'transparent';
+				// this.containerNode.style.backgroundColor = 'transparent';
+				this.containerNode.style.opacity = '1';
 				this.active = true;
 			}
 		},
@@ -53,26 +55,27 @@ define([
 		},
 
 		_createSquare: function(objData){
-			return this._addProps(this.canvas.createRect({x:10, y:10, width:80, height:80}), objData.pattern, objData.color);
+			return this._addProps(this.canvas.createRect({x:10, y:10, width:60, height:60}), objData.pattern, objData.color);
 		},
 		_createCircle: function(objData){
-			return this._addProps(this.canvas.createCircle({cx:50, cy:50, r:40}), objData.pattern, objData.color);
+			return this._addProps(this.canvas.createCircle({cx:40, cy:40, r:30}), objData.pattern, objData.color);
 		},
 		_createStar: function(objData){
-			var cx = 50, cy = 50, shape;
+			var cx = 40, cy = 40, shape;
 			//oT, iTR, oTR, iR, oBR, iB, oBL, iL, oTL, iTL
 			shape = this.canvas.createPolyline([
-				{x:cx,    y:cy-40}, // oT
-				{x:cx+15, y:cy-10}, // iTR
-				{x:cx+40, y:cy-20}, // oTR
-				{x:cx+15, y:cy+5},    // iR
-				{x:cx+40, y:cy+40}, // oBR
+				{x:cx,    y:cy-30}, // oT
+				{x:cx+10, y:cy-8}, // iTR
+				{x:cx+30, y:cy-8}, // oTR
+				{x:cx+14, y:cy+7},    // iR
+				{x:cx+25, y:cy+30}, // oBR
 				{x:cx,    y:cy+15}, // iB
-				{x:cx-40, y:cy+40}, // oBL
-				{x:cx-15, y:cy+5},    // iL
-				{x:cx-40, y:cy-20}, // oTL
-				{x:cx-15, y:cy-10},  // iTL
-				{x:cx,    y:cy-40}  // close it up
+				{x:cx-25, y:cy+30}, // oBL
+				{x:cx-14, y:cy+7},    // iL
+				{x:cx-30, y:cy-8}, // oTL
+				{x:cx-10, y:cy-8},  // iTL
+				{x:cx,    y:cy-30},  // close it up
+				{x:cx+10, y:cy-10}
 				]);
 			return this._addProps(shape, objData.pattern, objData.color);
 		},
@@ -85,9 +88,9 @@ define([
 				break;
 				case "gradient": shape.setFill({
 					type: "radial",
-					cx:50,
-					cy:50,
-					r: 50,
+					cx:40,
+					cy:40,
+					r: 30,
 					colors: [
 						{ offset: 0,   color: "white" },
 	       			    { offset: 1, color: color}
@@ -101,7 +104,7 @@ define([
 
 
 		startup: function(){
-			this.canvas = gfx.createSurface(this.gfxNode, 100, 100);
+			this.canvas = gfx.createSurface(this.gfxNode, 80, 80);
 			switch(this.type){
 				case "shapes": this._drawShape();
 				break;
