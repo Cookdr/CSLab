@@ -20,6 +20,8 @@ define([
 		props: null,
 		active: true,
 		canvas: null,
+		isSelected: null,
+
 
 		constructor: function(args){
 			this.type = args.type;
@@ -40,6 +42,16 @@ define([
 				this.containerNode.style.opacity = '1';
 				this.active = true;
 			}
+		},
+
+		selected: function(){
+			this.containerNode.style.backgroundColor = 'rgba(61, 191, 85,.5)';
+			this.isSelected = true;
+		},
+
+		unselected: function(){
+			this.containerNode.style.backgroundColor = 'transparent';
+			this.isSelected = false;
 		},
 
 		_drawShape: function(){

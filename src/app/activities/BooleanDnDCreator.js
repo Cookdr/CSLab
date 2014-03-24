@@ -18,7 +18,7 @@ define([
 			//	hiddenProps: "color" 
 			}));
 			
-			var type = item.data === "NOT" ? [ "booleanOp", "booleanProp"] : ["booleanOp"];
+			var type = item.data === "NOT" ? [ "booleanOp", "booleanProp", "NOT"] : ["booleanOp"];
 
 			result = { node: node, data: item, type: type };
 			return result;

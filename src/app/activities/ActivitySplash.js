@@ -1,6 +1,7 @@
 define([
 	"./Binary",
 	"./Boolean",
+    "app/menu/MenuItemLevel",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/dom-construct",
@@ -15,26 +16,14 @@ define([
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/ActivitySplash.html"
-],function(Binary, Boolean, declare, lang, domConstruct, html, on, xhr, router, topic, Button, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
+],function(Binary, Boolean, MenuItemLevel, declare, lang, domConstruct, html, on, xhr, router, topic, Button, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.ActivitySplash",[_WidgetBase, _TemplatedMixin], {
 		//	set our template
 
-		constructor: function(activityName){
-			this.activityName = activityName;
-			
-            xhr("app/resources/data/"+activityName+"Problems.json", {
-                handleAs: "json",
-                preventCache: true
-            }).then(lang.hitch(this, function(data){
-                this.problemList = data;
-                this.updateSidebar(this.problemList);
-                if(this.problem){
-                    this.placeProblem();
-                }
-            }), function(err){
-                console.log(err);
-            });
+		constructor: function(args){
+			this.activityName = args.actName;
+            this.user = args.user;
 		},
 
 		templateString: template,
@@ -42,6 +31,7 @@ define([
 		activityName: null,
 		problemList: null,
 		problem: null,
+        user: null,
 		progressBar: new ProgressBar({
         	style: "width: 90%"
     	}),
@@ -50,23 +40,33 @@ define([
     		// Get the activity, from here we can get
     		// name/number and compare to what we have stored for the user
 
-    		this.progressBar.set({value:(parseInt(this.progressBar.get("value"))+1)});
             domConstruct.empty(this.containerNode);
             html.set(this.containerNode,"Success!");
+           if(this.user.update(this.activityName, this.problem)){
+                this.progressBar.set({value:(parseInt(this.progressBar.get("value"))+1)});
+           }
 
             if(this.progressBar.get("value") == this.progressBar.get("maximum")){
                 alert("You've completed this Activity!");
             }
+
+            this._updateSidebar();
     	},
 
     	setProblem: function(problem){
-    			if(this.problemList && problem != this.problem){
-    				console.log("Setting problem: "+problem);
-    				this.problem = problem;
-    				this.placeProblem();
-    			} else{
-                    this.problem = problem;
+            if(problem != ""){
+                if(this.user.hasAccess(problem, this.activityName)){
+        			if(this.problemList && problem != this.problem){
+        				console.log("Setting problem: "+problem);
+        				this.problem = problem;
+        				this.placeProblem();
+        			} else{
+                        this.problem = problem;
+                    }
+                }else{
+                    router.go("/"+this.activityName.toLowerCase());
                 }
+            }
     	},
 
     	placeProblem: function(){
@@ -75,7 +75,7 @@ define([
     		// and not just garbage in the hash.
     		var splitProb, level, problem;
     		console.log("placing problem: "+this.problem);
-    		if(this.problem){
+    		if(this.problem && this.problem !== ""){
     			splitProb = this.problem.split("/");
     			switch(splitProb.length){
     				case 1: console.log("only have a level");	
@@ -91,28 +91,42 @@ define([
     			}
     		}else{
     			console.log("no problem");
+                this._showHome();
     		}
     	},
 
-    	updateSidebar: function(problemList){
-    		var i,j,list, button, level, counter = 0, levels = problemList.levels;
+    	_createSidebar: function(problemList){
+    		var i,j, level, levelList = [];
+            prog = this.user.getProgress(this.activityName),
+            compCounter = 0, counter = 0, levels = problemList.levels;
     		for(i=0; i < levels.length; i++){
     			level = problemList.levels[i];
-    			domConstruct.create("h2", {innerHTML: "Level "+level.level.toString()},this.sidebarContainerNode);
-    			list = domConstruct.create("div",{"class":"sidebarLevelWrapper"},this.sidebarContainerNode);
-    			for(j = 0; j< level.problems.length; j++){
-    				button = new Button({
-                        label: "Problem "+(j+1),
-                        dest: "/"+this.activityName.toLowerCase()+"/"+(i+1)+"/"+(j+1),
-                        onClick: function(evt){
-                            router.go(this.dest);
-                        }
-                    }).placeAt(list);
-    				counter++;
-    			}
+    			levelList.push(new MenuItemLevel({level:level, activityName:this.activityName, prog: prog}).placeAt(this.sidebarContainerNode));
     		}
     		this.progressBar.set("maximum",counter);
+            this.progressBar.set("value", this._countCompProblems());
+
+            return levelList;
     	},
+
+        _updateSidebar: function(){
+            var i;
+            for(i=0; i < this.levelList.length; i++){
+                this.levelList[i].update(this.user.getProgress(this.activityName));
+            }
+        },
+
+        _countCompProblems: function(){
+            var i, j, count = 0, prog = this.user.getProgress(this.activityName);
+            for(i=0; i <= prog.level; i++){
+                if(i === prog.level){
+                   count += prog.problem;
+                }else{
+                    count += this.problemList.levels[i].length;
+                }
+            }
+            return count;
+        },
 
         _createActivity: function(problem){
             var act;
@@ -126,8 +140,26 @@ define([
 
             this.activity = act;
         },
+        _showHome: function(){
+            domConstruct.empty(this.contaierNode);
+            html.set(this.containerNode, "Please Select a Problem");
+        },
 
 		postCreate: function(){
+            xhr("app/resources/data/"+this.activityName+"Problems.json", {
+                handleAs: "json",
+                preventCache: true
+            }).then(lang.hitch(this, function(data){
+                this.problemList = data;
+                this.user.setProblemList(this.problemList);
+                this.levelList = this._createSidebar(this.problemList);
+                if(this.problem){
+                    this.placeProblem();
+                }
+            }), function(err){
+                console.log(err);
+            });
+
 			this.progressBar.placeAt(this.progressBarNode);
 			html.set(this.activityTitleNode, this.activityName);
 			topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));

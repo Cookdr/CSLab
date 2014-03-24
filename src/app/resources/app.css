@@ -22,7 +22,13 @@ html, body{
 .csLab{
 	display: inline-block;
 	text-align: left;
-	width:95%;
+	width:100%;
+}
+.main_content{
+	/*display:inline-block;*/
+	margin:0 auto;
+	min-width:800px;
+	max-width:1000px;
 }
 #headerWrapper{
 	margin:0 auto;
@@ -52,9 +58,6 @@ html, body{
 	background-repeat:no-repeat;
 	margin-left:-2px;
 }
-.activitySplash{
-	margin:0 auto;
-}
 #navbar{
 	line-height:61px;
 	height:61px;
@@ -78,7 +81,7 @@ html, body{
 	clear:both;
 	padding-left:8px;
 	color: black;
-	width:150px;
+	width:130px;
 	float:left;
 	background-color:#e2e2e2;
 	border:2px solid black;
@@ -86,15 +89,16 @@ html, body{
 	-webkit-border-radius: 15px;
 	border-radius: 15px;
 }
-#sidebar li a{
-	color: black;
+#sidebar h1{
+	text-align:center;
+	width:100%;
+	margin-left:-5px;
 }
 .sidebarLevelWrapper{
 	padding-left:10px;
 }
 #activityWrapper{
-	width:80%;
-	min-width:600px;
+	min-width:618px;
 	float:left;
 	padding:8px;
 	margin-left:20px;
@@ -170,6 +174,7 @@ html, body{
 	min-width:50px;
 	background-color:#6989E0;
 	border-radius:10px;
+	border: 1px solid #59647D ;
 }
 
 .booleanStatement{
@@ -189,11 +194,13 @@ html, body{
 	background-color:rgb(160,0,0);
 }
 .addlBooleanStatement{
+	margin-left:5px;
 	float:left;
 	min-width:300px;
 	height:50px;
 	border-radius:10px;
 	background-color:#E06969;
+	border:1px solid #703535;
 }
 .booleanShape{
 	float:left;
@@ -242,4 +249,11 @@ html, body{
 }
 .binaryCardDeactive{
 	background-image:url(images/deactivatedCard.png);
+}
+/* Trophy Shelf */
+.trophyShelf{
+	border: 10px ridge #272728;
+	min-height:50px;
+	min-width:400px;
+	background-image:url(images/shelf_bg.gif);
 }

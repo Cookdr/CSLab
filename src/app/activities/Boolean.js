@@ -63,10 +63,16 @@ define([
 		},
 
 		createShapes: function(shapes){
-			var i, shape;
+			var i, shape, isSelected;
 			for(i=0; i < shapes.length; i++){
 				shape = new BooleanShape({type: this.flags.shapes, props: shapes[i]}).placeAt(this.objectsNode);
 				shape.startup();
+				isSelected = array.filter(this.data, function(item){
+					return item.shape === shapes[i].shape && item.color === shapes[i].color && item.pattern === shapes[i].pattern;
+				}, this);
+				if(isSelected.length > 0){
+					shape.selected();
+				}
 				this.objects.push(shape);
 			}
 		},
@@ -89,18 +95,27 @@ define([
 		},
 
 		refreshShapes: function(mask){
-			var i;
+			var i, notHid = true, notShow = true;
 			for(i = 0; i < mask.length; i++){
-				if(mask[i]){
+				if(!mask[i]){
 					this.objects[i].hide();
+					if(this.objects[i].isSelected){
+						notHid = false;
+					}
 				}else{
 					this.objects[i].show();
+					if(!this.objects[i].isSelected){
+						notShow = false;
+					}
 				}
+			}
+			if(notHid && notShow){
+				this.success();
 			}
 		},
 
 		_addStatementBox: function(){
-			this._additionalStatements.push(new BooleanStatementBox().placeAt(this.addlBooleanStatementsNode));
+			this._additionalStatements.push(new BooleanStatementBox(false).placeAt(this.addlBooleanStatementsNode));
 		},
 
 		_randArray: function(){
@@ -108,12 +123,15 @@ define([
 		},
 
 		_updateStatement: function(args){
-			var terms, nodes = this._booleanStatementArea.getAllNodes(),
-			map = this._booleanStatementArea.map;
-
-			terms = booleanLogic.getTerms(map, nodes);
+			var op, terms;
+			terms = this._booleanStatementArea.getTerms();
+			op = this._booleanStatementArea.getOp();
 
 			result = booleanLogic.evalStatement(terms);
+			if(op){
+				// op has to be NOT
+				result = booleanLogic.evalExp(null, op, result);
+			}
 
 			// Gets us the result of the base boolean statement.
 			// now we add add in any additional clauses
@@ -123,13 +141,21 @@ define([
 				sndResult = booleanLogic.evalStatement(addlClause.getTerms());
 
 				if(sndResult){
-					result = booleanLogic.evalExp(result, addlClause.getOp(), sndResult);
+					if(addlClause.getOp() === "NOT"){
+						result = booleanLogic.evalExp(result, "AND", booleanLogic.evalExp(null, "NOT", sndResult));
+					}else{
+						result = booleanLogic.evalExp(result, addlClause.getOp(), sndResult);
+					}
 				}
 			}
 
 			if(result){
 				this.refreshShapes(result);
 			}
+		},
+		// Tests for userSelect success
+		_updateSelection: function(){
+
 		},
 
 		// want to create the bitstring for indexes hidden by this prop ("blue", solid etc)
@@ -166,14 +192,11 @@ define([
 
 		startup: function(){
 
-			if(this.type === "pickOne"){
-				if(this.flags.shapes=="shapes"){
+			if(this.type === "userStatement"){
+				if(this.flags.shapes === "shapes"){
 					this.createAllShapes();
 				}
-				this._booleanStatementArea =  new BooleanStatementSource(this.booleanStatementNode, {
-					accept: ["booleanProp"], 
-					horizontal: true
-				});
+				this._booleanStatementArea =  new BooleanStatementBox(true, this.booleanStatementNode);
 				this._addStatementBox();
 				dndUtil.buildProps(this.booleanPropNode, this.createPropItems(this._shapePropList), true);
 				dndUtil.buildOps(this.booleanOpNode,[
@@ -188,6 +211,10 @@ define([
 				aspect.after(this._booleanStatementArea, "onDrop" ,function(){
 					topic.publish("statementChanged");
 				});
+			}else{
+				if(this.flags.shapes === "shapes"){
+					
+				}
 			}
 		}
 	});

@@ -2,21 +2,18 @@ define([
 	"./activities/ActivitySplash",
 	"./activities/Binary",
 	"./activities/Boolean",
+	"./TrophyShelf",
+	"./User",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
-	"dojo/cookie",
 	"dojo/dom-construct",
 	"dojo/Deferred",
-	"dojo/json",
 	"dojo/router",
 	"dojo/topic",
-	"dijit/Dialog",
-	"dijit/form/Button",
-	"dijit/form/TextBox",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/CSLab.html"
-],function(ActivitySplash, Binary, Boolean, declare, lang, cookie, domConstruct, Deferred, json, router, topic, Dialog, Button, TextBox, _WidgetBase, _TemplatedMixin, template){
+],function(ActivitySplash, Binary, Boolean, TrophyShelf, User, declare, lang, domConstruct, Deferred, router, topic, _WidgetBase, _TemplatedMixin, template){
 
 	return declare([_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -39,48 +36,9 @@ define([
 			this.splash.startup();
 		},
 
-		_getUserNamePopup: function(){
-			var pop, name, submit;
-
-			pop = new Dialog({
-				title: "Welcome!",
-				content: "Hello! It looks like it's your first time here, what's your name?<br/>"
-			});
-
-			name = new TextBox({
-				placeholder: "Name"
-			}).placeAt(pop.containerNode);
-
-			submit = new Button({
-				label: "Submit",
-				onClick: function(){
-					topic.publish("enteredUsername", name.get("value"));
-					pop.destroyRecursive();
-				}
-			}).placeAt(pop.containerNode);
-
-			pop.show();
-
-
-
-		},
-
-		_createCookie: function(name){
-			cookie("profile", json.stringify({"name":name, date: new Date()}), {expires:5*365});
-		},
-
 		startup: function(){
 			if(!this.user){
-				// no user yet, lets check the cookies
-				this.user = cookie("profile");
-				if(!this.user){
-					topic.subscribe("enteredUsername", this._createCookie);
-					// first timer, let's setup a new user
-					this._getUserNamePopup();
-				}else{
-					// got a cookie
-					this.user = json.parse(this.user);
-				}
+				this.user = new User();
 			}
 			domConstruct.empty(this.containerNode);
 			router.register("/binary/?(.*)", lang.hitch(this, function(evt){
@@ -90,7 +48,7 @@ define([
   				}else{
   					// async handled within splash page.
   					console.log("new Activity, creating and placing problem");
-  					this.replaceContent(new ActivitySplash("Binary"));
+  					this.replaceContent(new ActivitySplash({actName:"Binary", user:this.user}));
   					if(evt.params[0] !== ""){
   						this.splash.setProblem(evt.params[0]);
   					}
@@ -104,10 +62,20 @@ define([
   				}else{
   					// async handled within splash page.
   					console.log("new Activity, creating and placing problem");
-  					this.replaceContent(new ActivitySplash("Boolean"));
+  					this.replaceContent(new ActivitySplash({actName:"Boolean", user:this.user}));
   					if(evt.params[0] !== ""){
   						this.splash.setProblem(evt.params[0]);
   					}
+  				}
+  			}));
+
+  			router.register("/medals", lang.hitch(this, function(evt){
+				if(this.splash && this.splash.activityName == "Medals"){
+					console.log("existing Activity, showing medals");
+  				}else{
+  					// async handled within splash page.
+  					console.log("Showing medals");
+  					this.replaceContent(new TrophyShelf({user:this.user}));
   				}
   			}));
   			router.startup();
