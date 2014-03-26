@@ -92,7 +92,7 @@ define([
 			// -1 because we're getting the url version so 1/1 for what will be 0/0 in
 			prob = {level: parseInt(prob[0])-1, problem: parseInt(prob[1])-1};
 
-			return (prob.level <= prog.level+1 && prob.problem <= prog.problem+1) ? true : false;
+			return (prob.level < prog.level || prob.level === prog.level && prob.problem <= prog.problem+1) ? true : false;
 
 		},
 

@@ -76,6 +76,10 @@ define([
 			});
 			if(!this.first){
 				aspect.after(this.op, "onDrop", lang.hitch(this, this._showStatement));
+			}else{
+				aspect.after(this.op, "onDrop", function(){
+					topic.publish("statementChanged");
+				});
 			}
 		}
 	});

@@ -20,15 +20,16 @@ define([
 		constructor: function(args){
 			this.activityName = "Medals";
             this.user = args.user;
+            this.progressBar = new ProgressBar({
+                style: "width: 90%"
+            });
 		},
 
 		templateString: template,
     	activityName: null,
         user: null,
         greetingString: "Hello ${name}! You have unlocked ${numUserMedals} medals!",
-		progressBar: new ProgressBar({
-        	style: "width: 90%"
-    	}),
+		progressBar: null,
 
 		postCreate: function(){
             html.set(this.greetingNode, stringUtil.substitute(this.greetingString, {

@@ -7,10 +7,11 @@ define([
 	"dojo/dom-style",
 	"dojo/html",
 	"dojo/on",
+	"dijit/TitlePane",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/MenuItemLevel.html"
-],function(declare, lang, MenuItemProblem, domConstruct, domClass, domStyle, html, on, _WidgetBase, _TemplatedMixin, template){
+],function(declare, lang, MenuItemProblem, domConstruct, domClass, domStyle, html, on, TitlePane, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.menu.MenuItemLevel",[_WidgetBase, _TemplatedMixin], {
 		templateString: template,
@@ -19,6 +20,7 @@ define([
 		prog: null,
 		level: null,
 		activityName: null,
+		titlePane: null,
 
 		constructor: function(args){
 			this.level = args.level;
@@ -35,6 +37,7 @@ define([
 			var i, lim = -1;
 			if(this.level.level-1 === prog.level){
 				lim = prog.problem+1
+				this.titlePane.set('open', true);
 			}else if(this.level.level-1 < prog.level){
 				lim = this.problemItems.length-1;
 			}
@@ -46,7 +49,11 @@ define([
 
 		postCreate: function(){
 			var activeProblem;
-			html.set(this.levelTitleNode, "Level "+this.level.level);
+			this.titlePane = new TitlePane({
+				title: "Level "+this.level.level,
+				open: this.active
+			}, this.containerNode);
+			//html.set(this.levelTitleNode, "Level "+this.level.level);
 			for(j = 0; j< this.level.problems.length; j++){
 				if(!this.active){
 					activeProblem = false;
@@ -62,7 +69,7 @@ define([
 						problem:j, 
 						activityName:this.activityName, 
 						active: activeProblem
-					}).placeAt(this.containerNode));
+					}).placeAt(this.titlePane.containerNode));
 			}
 		}
 	});

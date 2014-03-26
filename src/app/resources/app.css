@@ -79,7 +79,7 @@ html, body{
 }
 #sidebar{
 	clear:both;
-	padding-left:8px;
+	padding:0px 0px 10px 8px;
 	color: black;
 	width:130px;
 	float:left;

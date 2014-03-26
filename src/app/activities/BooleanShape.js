@@ -6,17 +6,19 @@ define([
 	"dojo/dom-style",
 	"dojo/html",
 	"dojo/on",
+	"dojo/topic",
 	"dojox/gfx",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/BooleanShape.html"
-],function(declare, lang, domConstruct, domClass, domStyle, html, on, gfx,  _WidgetBase, _TemplatedMixin, template){
+],function(declare, lang, domConstruct, domClass, domStyle, html, on, topic, gfx,  _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.BooleanShape",[_WidgetBase, _TemplatedMixin], {
 
 		//	set our template
 		templateString: template,
 		type: null,
+		clickable: null,
 		props: null,
 		active: true,
 		canvas: null,
@@ -26,6 +28,7 @@ define([
 		constructor: function(args){
 			this.type = args.type;
 			this.props = args.props;
+			this.clickable = args.clickable;
 		},
 
 		hide: function(){
@@ -114,6 +117,20 @@ define([
 			return shape;
 		},
 
+		_toggleActive: function(){
+			if(!this.active){
+				this.show();
+			}else{
+				this.hide();
+			}
+			topic.publish("userSelected");
+		},
+
+		// compare to another Boolean shape and return true if it's a match
+		compare: function(shape){
+			var p = this.props;
+			return p.shape === shape.shape && p.color === shape.color && p.pattern === shape.pattern;
+		},
 
 		startup: function(){
 			this.canvas = gfx.createSurface(this.gfxNode, 80, 80);
@@ -121,7 +138,11 @@ define([
 				case "shapes": this._drawShape();
 				break;
 			}
-			on(this, "click", lang.hitch(this, this.toggleActive));
+
+			if(this.clickable){
+				on(this, "click", lang.hitch(this, this._toggleActive));
+				this.hide();
+			}
 		}
 	});
 });

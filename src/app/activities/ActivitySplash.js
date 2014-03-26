@@ -24,6 +24,9 @@ define([
 		constructor: function(args){
 			this.activityName = args.actName;
             this.user = args.user;
+            this.progressBar = new ProgressBar({
+                style: "width: 90%"
+             })
 		},
 
 		templateString: template,
@@ -32,9 +35,7 @@ define([
 		problemList: null,
 		problem: null,
         user: null,
-		progressBar: new ProgressBar({
-        	style: "width: 90%"
-    	}),
+		progressBar:null,
 
     	activitySuccess: function(){
     		// Get the activity, from here we can get

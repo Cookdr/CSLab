@@ -45,9 +45,6 @@ define([
 			}else{
 				this.data = problem.problemData.slice();
 			}
-
-			topic.subscribe("statementChanged", lang.hitch(this, this._updateStatement));
-			topic.subscribe("statementAdded", lang.hitch(this, this._addStatementBox));
 		},
 
 		createPropItems: function(propList){
@@ -62,22 +59,25 @@ define([
 			return arr;
 		},
 
-		createShapes: function(shapes){
+		createShapes: function(shapes, clickable){
 			var i, shape, isSelected;
-			for(i=0; i < shapes.length; i++){
-				shape = new BooleanShape({type: this.flags.shapes, props: shapes[i]}).placeAt(this.objectsNode);
+			for(i=0; i < shapes.length; i++){	
+				shape = new BooleanShape({type: this.flags.shapes, props: shapes[i], clickable: clickable}).placeAt(this.objectsNode);
 				shape.startup();
-				isSelected = array.filter(this.data, function(item){
-					return item.shape === shapes[i].shape && item.color === shapes[i].color && item.pattern === shapes[i].pattern;
-				}, this);
-				if(isSelected.length > 0){
-					shape.selected();
+				// if not clickable(userSelect) then need to see if selected(userStatement)
+				if(!clickable){
+					isSelected = array.filter(this.data, function(item){
+						return item.shape === shapes[i].shape && item.color === shapes[i].color && item.pattern === shapes[i].pattern;
+					}, this);
+					if(isSelected.length > 0){
+						shape.selected();
+					}
 				}
 				this.objects.push(shape);
 			}
 		},
 
-		createAllShapes: function(){
+		createAllShapes: function(clickable){
 			var i,j,k, shapes = this._shapePropList.shape,
 			patterns = this._shapePropList.pattern,
 			colors = this._shapePropList.color, arr = [];
@@ -91,7 +91,7 @@ define([
 
 			arr = this._randomizeArray(arr);
 
-			this.createShapes(arr);
+			this.createShapes(arr, clickable);
 		},
 
 		refreshShapes: function(mask){
@@ -118,6 +118,51 @@ define([
 			this._additionalStatements.push(new BooleanStatementBox(false).placeAt(this.addlBooleanStatementsNode));
 		},
 
+		_buildStatement: function(statement){
+			var i, type;
+			for(i=0; i < statement.length; i++){
+				if(array.indexOf(this._opList, statement[i]) >=0){
+					type = "booleanOp";
+				}else{
+					type = "booleanProp";
+				}
+
+				domConstruct.create("div",{
+					innerHTML: statement[i],
+					class: type+" dojoDndItem"
+				}, this.booleanStatementNode);
+			}
+		},
+
+		// Checks the user's selections against this.data.shapes to test success
+		_checkSelections: function(evt){
+			var i, j, shape, chosen, counter = 0, success = true;
+			for(i=0; i < this.objects.length; i++){
+				shape = this.objects[i];
+				if(shape.active){
+					// see if it's one of the chosen ones
+					chosen = false;
+					for(j=0; j < this.data.shapes.length; j++){
+						if(shape.compare(this.data.shapes[j])){
+							chosen = true;
+							break;
+						}
+					}
+					if(!chosen){
+						success = false;
+						break;
+					}else{
+						counter++;
+					}
+				}
+			}
+
+			if(success && counter === this.data.shapes.length){
+				this.success();
+			}
+
+		},
+
 		_randArray: function(){
 			return [];
 		},
@@ -128,7 +173,7 @@ define([
 			op = this._booleanStatementArea.getOp();
 
 			result = booleanLogic.evalStatement(terms);
-			if(op){
+			if(op && result){
 				// op has to be NOT
 				result = booleanLogic.evalExp(null, op, result);
 			}
@@ -152,10 +197,6 @@ define([
 			if(result){
 				this.refreshShapes(result);
 			}
-		},
-		// Tests for userSelect success
-		_updateSelection: function(){
-
 		},
 
 		// want to create the bitstring for indexes hidden by this prop ("blue", solid etc)
@@ -193,8 +234,10 @@ define([
 		startup: function(){
 
 			if(this.type === "userStatement"){
+				topic.subscribe("statementChanged", lang.hitch(this, this._updateStatement));
+				topic.subscribe("statementAdded", lang.hitch(this, this._addStatementBox));
 				if(this.flags.shapes === "shapes"){
-					this.createAllShapes();
+					this.createAllShapes(false);
 				}
 				this._booleanStatementArea =  new BooleanStatementBox(true, this.booleanStatementNode);
 				this._addStatementBox();
@@ -212,9 +255,18 @@ define([
 					topic.publish("statementChanged");
 				});
 			}else{
+				// Only have one {statement, shape} object in the array
+				this.data = this.data[0];
+				// userSelect
 				if(this.flags.shapes === "shapes"){
-					
+					this.createAllShapes(true);
 				}
+				this.subscribe("userSelected", this._checkSelections);
+
+				this._buildStatement(this.data.statement.split(' '));
+				domConstruct.destroy(this.booleanOpNode);
+				domConstruct.destroy(this.booleanPropNode);
+				domConstruct.destroy(this.addlBooleanStatementsNode);
 			}
 		}
 	});

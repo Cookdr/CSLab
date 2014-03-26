@@ -11,6 +11,18 @@
 				 	"flags":{
 				 		"shapes":"shapes"
 				 	}
+				},
+				{
+					"type": "userSelect",
+					"problemData": [{
+						"statement": "circle AND blue AND solid",
+						"shapes": [
+							{"shape": "circle", "pattern": "solid", "color": "blue"}
+						]
+					}],
+				 	"flags":{
+				 		"shapes":"shapes"
+				 	}
 				}
 			]
 		}
