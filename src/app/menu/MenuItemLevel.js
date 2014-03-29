@@ -31,13 +31,20 @@ define([
 			if(this.prog.level >= this.level.level-1){
 				this.active = true;
 			}
+
+			this.titlePane = new TitlePane({
+				title: "Level "+this.level.level,
+				open: this.active
+			});
 		},
 
 		update:function(prog){
 			var i, lim = -1;
 			if(this.level.level-1 === prog.level){
 				lim = prog.problem+1
-				this.titlePane.set('open', true);
+				if(!this.titlePane.get('open')){
+					this.titlePane.set('open', true);
+				}
 			}else if(this.level.level-1 < prog.level){
 				lim = this.problemItems.length-1;
 			}
@@ -49,10 +56,8 @@ define([
 
 		postCreate: function(){
 			var activeProblem;
-			this.titlePane = new TitlePane({
-				title: "Level "+this.level.level,
-				open: this.active
-			}, this.containerNode);
+			this.titlePane.placeAt(this.containerNode);
+			
 			//html.set(this.levelTitleNode, "Level "+this.level.level);
 			for(j = 0; j< this.level.problems.length; j++){
 				if(!this.active){

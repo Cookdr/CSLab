@@ -1,0 +1,46 @@
+{
+	"medals":[
+		{
+			"name": "Gold Binary",
+			"activity": "Binary",
+			"text": "There are 10 kinds of people in the world. Those who understand binary and those who don't.",
+			"condition": {"type": "binaryProgress", "cond": 3},
+			"image": "goldBinMedal.png"
+		},
+		{
+			"name": "Silver Binary",
+			"activity": "Binary",
+			"text": "There are 10 kinds of people in the world. Those who understand binary and those who don't.",
+			"condition": {"type": "binaryProgress", "cond": 2},
+			"image": "silverBinMedal.png"
+		},
+		{
+			"name": "Bronze Binary",
+			"activity": "Binary",
+			"text": "There are 10 kinds of people in the world. Those who understand binary and those who don't.",
+			"condition": {"type": "binaryProgress", "cond": 1},
+			"image": "bronzeBinMedal.png"
+		},
+		{
+			"name": "Gold Boolean",
+			"activity": "Boolean",
+			"text": "Woot! NOT booleans are tricky.",
+			"condition": {"type": "binaryProgress", "cond": 3},
+			"image": "goldBoolMedal.png"
+		},
+		{
+			"name": "Silver Boolean",
+			"activity": "Boolean",
+			"text": "Woot! NOT booleans are tricky.",
+			"condition": {"type": "binaryProgress", "cond": 2},
+			"image": "silverBoolMedal.png"
+		},
+		{
+			"name": "Bronze Boolean",
+			"activity": "Boolean",
+			"text": "Woot! NOT booleans are tricky.",
+			"condition": {"type": "binaryProgress", "cond": 1},
+			"image": "bronzeBoolMedal.png"
+		}
+	]
+}

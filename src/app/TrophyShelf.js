@@ -31,6 +31,13 @@ define([
         greetingString: "Hello ${name}! You have unlocked ${numUserMedals} medals!",
 		progressBar: null,
 
+        _fillShelf: function(){
+            var i;
+            for(i=0; i < this.user.medals.length; i++){
+                domConstruct.create("img", {src:"app/resources/images/"+this.user.medals[i].image}, this.shelfNode);
+            }
+        },
+
 		postCreate: function(){
             html.set(this.greetingNode, stringUtil.substitute(this.greetingString, {
                 name: this.user.name,
@@ -38,6 +45,8 @@ define([
             }));
             this.progressBar.placeAt(this.progressBarNode);
             html.set(this.activityTitleNode, this.activityName);
+
+            this._fillShelf();
 		}
 	});
 });

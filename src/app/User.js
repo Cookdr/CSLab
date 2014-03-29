@@ -4,43 +4,50 @@ define([
 	"dojo/aspect",
 	"dojo/cookie",
 	"dojo/json",
+	"dojo/request/xhr",
 	"dojo/topic",
 	"dijit/Dialog",
 	"dijit/form/Button",
 	"dijit/form/TextBox"
-	], function(declare, lang, aspect, cookie, json, topic, Dialog, Button, TextBox){
+	], function(declare, lang, aspect, cookie, json, xhr, topic, Dialog, Button, TextBox){
 
 	return declare(null, {
+		// These should be saved
 		name: null,
-		problemList: null,
 		binaryProgress: {level: 0, problem: -1},
 		booleanProgress: {level: 0, problem: -1},
 		searchProgress: {level: 0, problem: -1},
 		sortProgress: {level: 0, problem: -1},
 		medals: [],
+		binPB: [],
+		boolPB: [],
+		sortPB: [],
+		searchPB: [],
+		// these should not
+		_problemList: null,
+		_medalList: null,
+		_fieldList: ["name","binaryProgress", "booleanProgress","searchProgress","sortProgress","medals",
+					"binPB","boolPB","searchPB","sortPB"],
+
 
 		constructor: function(){
 			this.fetch();
 		},
 
 		save: function(){
-			cookie("profile", json.stringify({
-				name: this.name, 
-				binaryProgress: this.binaryProgress, 
-				booleanProgress: this.booleanProgress, 
-				searchProgress: this.searchProgress, 
-				sortProgress: this.sortProgress,
-				medals: this.medals
-			}), {expires:5*365});
+			cookie("profile", json.stringify(this._createCookieObject()), {expires:5*365});
 		},
-
 		update: function(activity, problem){
-			var updateFunc, curProgress;
+			var updateFunc, curProgress, medals = [], newProb = false, newLevel = false, fin = false;
 			problem = problem.split('/');
 			// -1 because we're getting the url version so 1/1 for what will be 0/0 in
 			problem = {level: parseInt(problem[0])-1, problem: parseInt(problem[1])-1};
-			if(problem.problem === this.problemList.levels[problem.level].problems.length-1){
+			if(problem.problem === this._problemList.levels[problem.level].problems.length-1){
 				problem = {level: problem.level+1, problem: -1};
+				newLevel = true;
+				if(problem.level === this._problemList.levels.length){
+					fin = true;
+				}
 			}
 
 			switch(activity){
@@ -54,11 +61,16 @@ define([
 
 			if(problem.level > curProgress.level || 
 				((problem.level === curProgress.level) && (problem.problem > curProgress.problem))){
+				medals = this._checkMedals(activity, problem);
+				if(medals){
+					// adding and saving medals if we got any
+					this.medals = this.medals.concat(medals);
+				}
 				updateFunc(problem);
 				this.save();
-				return true;
+				newProb = true;
 			}
-				return false;
+				return {newProb: newProb, newLevel: newLevel, fin:fin, medals: medals};
 		},
 
 		fetch: function(){
@@ -74,6 +86,14 @@ define([
 			}else{
 				this._getUserNamePopup();
 			}
+			xhr("app/resources/data/medals.json", {
+                handleAs: "json",
+                preventCache: false
+            }).then(lang.hitch(this, function(data){
+                this._medalList = data.medals;
+            }), function(err){
+                console.log(err);
+            });
 		},
 
 		getProgress: function(actName){
@@ -97,7 +117,27 @@ define([
 		},
 
 		setProblemList: function(problemList){
-			this.problemList = problemList;
+			this._problemList = problemList;
+		},
+
+		_checkMedals: function(activity, problem){
+			var i, medal, medals = [];
+			for(i=0; i < this._medalList.length; i++){
+				medal = this._medalList[i];
+				if(medal.activity === activity && medal.condition.cond === problem.level && problem.problem === -1){
+					medals.push(medal);
+				}
+			}
+			return medals;
+		},
+
+		_createCookieObject: function(){
+			var i, field, obj = {};
+			for(i=0; i < this._fieldList.length; i++){
+				field = this._fieldList[i];
+				obj[field] = this[field];
+			}
+			return obj;
 		},
 
 		_getUserNamePopup: function(){

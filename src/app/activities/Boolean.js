@@ -129,7 +129,7 @@ define([
 
 				domConstruct.create("div",{
 					innerHTML: statement[i],
-					class: type+" dojoDndItem"
+					"class": type+" dojoDndItem"
 				}, this.booleanStatementNode);
 			}
 		},

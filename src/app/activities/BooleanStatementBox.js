@@ -1,9 +1,6 @@
 define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
-	"dojo/dom-construct",
-	"dojo/dom-class",
-	"dojo/dom-style",
 	"dojo/dnd/Source",
 	"dojo/aspect",
 	"dojo/topic",
@@ -13,7 +10,7 @@ define([
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/BooleanStatementBox.html"
-],function(declare, lang, domConstruct, domClass, domStyle, Source, aspect, topic, Button, BooleanStatementSource, booleanLogic, _WidgetBase, _TemplatedMixin, template){
+],function(declare, lang, Source, aspect, topic, Button, BooleanStatementSource, booleanLogic, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.BooleanStatementBox",[_WidgetBase, _TemplatedMixin], {
 

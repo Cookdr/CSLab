@@ -27,21 +27,25 @@ define([
 			this.problem = args.problem;
 			this.activityName = args.activityName;
 			this.active = args.active;
-		},
-
-		setActive: function(){
-			this.button.set("disabled", false);
-		},
-		
-		postCreate: function(){
 			this.button = new Button({
                     label: "Problem "+(this.problem+1),
+                    disabled: !this.active,
                     dest: "/"+this.activityName.toLowerCase()+"/"+this.level+"/"+(this.problem+1),
                     onClick: function(evt){
                         router.go(this.dest);
                     }
-                }).placeAt(this.containerNode);
-			this.button.set("disabled", !this.active);
+                });
+		},
+
+		setActive: function(){
+			if(!this.active){
+				this.button.set("disabled", false);
+				this.active = true;
+			}
+		},
+		
+		postCreate: function(){
+			this.button.placeAt(this.containerNode);
 		}
 	});
 });

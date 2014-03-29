@@ -2,6 +2,7 @@ define([
 	"./Binary",
 	"./Boolean",
     "app/menu/MenuItemLevel",
+    "app/Medal",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/dom-construct",
@@ -9,14 +10,16 @@ define([
 	"dojo/on",
 	"dojo/request/xhr",
 	"dojo/router",
+    "dojo/string",
 	"dojo/topic",
     "dijit/form/Button",
+    "dijit/Dialog",
 	"dijit/ProgressBar",
 	"dijit/registry",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/ActivitySplash.html"
-],function(Binary, Boolean, MenuItemLevel, declare, lang, domConstruct, html, on, xhr, router, topic, Button, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
+],function(Binary, Boolean, MenuItemLevel, Medal, declare, lang, domConstruct, html, on, xhr, router, stringUtil, topic, Button, Dialog, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.ActivitySplash",[_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -26,7 +29,7 @@ define([
             this.user = args.user;
             this.progressBar = new ProgressBar({
                 style: "width: 90%"
-             })
+             });
 		},
 
 		templateString: template,
@@ -36,20 +39,25 @@ define([
 		problem: null,
         user: null,
 		progressBar:null,
+        successDialog: null,
+        _finTemplate:"<div><h2>Congratulations ${name}!</h2> <p>You've completed this Activity! Feel free to come back and come back and rework some of the problems, especially the timed ones. You may find that there are some surprises to be earned!</p></div>",
+        _finLevelTemplate: "<div><h2>Congratulations ${name}!</h2> <p>You've completed this Level! Now the next level is going to be a little different but don't be discouraged if you find it tricky at first.</p></div>",
+        _finProbTemplate: "<div><h2>Congratulations ${name}!</h2> <p>You've completed this Problem!</p></div>",
 
     	activitySuccess: function(){
+            var updateResults;
     		// Get the activity, from here we can get
     		// name/number and compare to what we have stored for the user
-
-            domConstruct.empty(this.containerNode);
-            html.set(this.containerNode,"Success!");
-           if(this.user.update(this.activityName, this.problem)){
-                this.progressBar.set({value:(parseInt(this.progressBar.get("value"))+1)});
-           }
-
-            if(this.progressBar.get("value") == this.progressBar.get("maximum")){
-                alert("You've completed this Activity!");
+            // newProb, newLevel, fin, medals
+            updateResults = this.user.update(this.activityName, this.problem);
+            if(updateResults.newProb){
+                this.progressBar.set("value",parseInt(this.progressBar.get("value"))+1);
             }
+            this._buildSuccessDialog(updateResults);
+
+            // if(this.progressBar.get("value") == this.progressBar.get("maximum")){
+            //     alert("You've completed this Activity!");
+            // }
 
             this._updateSidebar();
     	},
@@ -96,6 +104,49 @@ define([
     		}
     	},
 
+        _buildMedalsArea: function(medals){
+            var i, node,medalsArea = domConstruct.create("div", {"class": "medalArea"});
+            for(i=0; i < medals.length; i++){
+               node = domConstruct.create("div");
+               new Medal(medals[i]).placeAt(medalsArea);
+            }
+            return medalsArea;
+        },
+
+        _buildSuccessDialog: function(updateResults){
+            var cont, msgTemplate;
+
+            this.successDialog = new Dialog({
+                title: "Success!"
+            });
+
+            if(updateResults.fin){
+                msgTemplate = this._finTemplate;
+            }else if(updateResults.newLevel){
+                msgTemplate = this._finLevelTemplate;
+            }else{
+                msgTemplate = this._finProbTemplate;
+            }
+
+            domConstruct.place(stringUtil.substitute(msgTemplate,
+            {
+                name: this.user.name
+            }), this.successDialog.containerNode);
+
+           if(updateResults.medals.length > 0){
+                domConstruct.place(this._buildMedalsArea(updateResults.medals), this.successDialog.containerNode);
+           } 
+
+            cont = new Button({
+                label: "Continue",
+                onClick: lang.hitch(this, function(){
+                    this.successDialog.destroyRecursive();
+                    domConstruct.empty(this.containerNode);
+                })
+            }).placeAt(this.successDialog.containerNode);
+            this.successDialog.show();
+        },
+
     	_createSidebar: function(problemList){
     		var i,j, level, levelList = [];
             prog = this.user.getProgress(this.activityName),
@@ -103,6 +154,7 @@ define([
     		for(i=0; i < levels.length; i++){
     			level = problemList.levels[i];
     			levelList.push(new MenuItemLevel({level:level, activityName:this.activityName, prog: prog}).placeAt(this.sidebarContainerNode));
+                counter+= this.problemList.levels[i].problems.length;
     		}
     		this.progressBar.set("maximum",counter);
             this.progressBar.set("value", this._countCompProblems());
@@ -121,9 +173,9 @@ define([
             var i, j, count = 0, prog = this.user.getProgress(this.activityName);
             for(i=0; i <= prog.level; i++){
                 if(i === prog.level){
-                   count += prog.problem;
+                   count += prog.problem > 0 ? prog.problem : 0;
                 }else{
-                    count += this.problemList.levels[i].length;
+                    count += this.problemList.levels[i].problems.length;
                 }
             }
             return count;
@@ -164,6 +216,10 @@ define([
 			this.progressBar.placeAt(this.progressBarNode);
 			html.set(this.activityTitleNode, this.activityName);
 			topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));
-		}
+		},
+        destroy: function(){
+            this.progressBar.destroy();
+            this.inherited(arguments);
+        }
 	});
 });
