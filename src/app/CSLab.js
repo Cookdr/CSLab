@@ -69,6 +69,34 @@ define([
   				}
   			}));
 
+  			router.register("/sorting/?(.*)", lang.hitch(this, function(evt){
+				if(this.splash && this.splash.activityName == "sorting"){
+					console.log("existing Activity, placing problem");
+  					this.splash.setProblem(evt.params[0]);
+  				}else{
+  					// async handled within splash page.
+  					console.log("new Activity, creating and placing problem");
+  					this.replaceContent(new ActivitySplash({actName:"Sorting", user:this.user}));
+  					if(evt.params[0] !== ""){
+  						this.splash.setProblem(evt.params[0]);
+  					}
+  				}
+  			}));
+
+  			router.register("/searching/?(.*)", lang.hitch(this, function(evt){
+				if(this.splash && this.splash.activityName == "searching"){
+					console.log("existing Activity, placing problem");
+  					this.splash.setProblem(evt.params[0]);
+  				}else{
+  					// async handled within splash page.
+  					console.log("new Activity, creating and placing problem");
+  					this.replaceContent(new ActivitySplash({actName:"Searching", user:this.user}));
+  					if(evt.params[0] !== ""){
+  						this.splash.setProblem(evt.params[0]);
+  					}
+  				}
+  			}));
+
   			router.register("/medals", lang.hitch(this, function(evt){
 				if(this.splash && this.splash.activityName == "Medals"){
 					console.log("existing Activity, showing medals");

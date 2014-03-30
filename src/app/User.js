@@ -16,8 +16,8 @@ define([
 		name: null,
 		binaryProgress: {level: 0, problem: -1},
 		booleanProgress: {level: 0, problem: -1},
-		searchProgress: {level: 0, problem: -1},
-		sortProgress: {level: 0, problem: -1},
+		searchingProgress: {level: 0, problem: -1},
+		sortingProgress: {level: 0, problem: -1},
 		medals: [],
 		binPB: [],
 		boolPB: [],
@@ -101,6 +101,10 @@ define([
 				case "Binary": return this.binaryProgress;
 				break;
 				case "Boolean": return this.booleanProgress;
+				break;
+				case "Sorting": return this.sortingProgress;
+				break;
+				case "Searching": return this.searchingProgress;
 				break;
 				default: return null;
 			}
