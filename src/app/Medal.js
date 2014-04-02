@@ -22,7 +22,7 @@ define([
 		text: "",
 		condition: "",
 		_imgNode: null,
-		_medalStringTemp: "Text: ${text}<br>Awarded for: ${condition}",
+		_medalStringTemp: "${text}<br>Awarded for: ${condition}",
 		_diag: null,
 
 		_openDiag: function(){
@@ -31,8 +31,10 @@ define([
 			});
 			domConstruct.create("img", {
 				"class": "bigMedal", 
-				src:"app/resources/images/big"+this.image, 
-				alt: this.text
+				src:"app/resources/images/"+this.image, 
+				alt: this.text,
+				heigth:200,
+				width:200
 			}, this._diag.containerNode);
 
 			domConstruct.create("p", {
@@ -56,7 +58,9 @@ define([
 			this._imgNode = domConstruct.create("img", {
 				"class": "medal", 
 				src:"app/resources/images/"+this.image, 
-				alt: this.text
+				alt: this.text,
+				height:100,
+				width:100
 			}, this.containerNode);
 
 			on(this._imgNode, "mouseover", lang.hitch(this, this._openDiag));

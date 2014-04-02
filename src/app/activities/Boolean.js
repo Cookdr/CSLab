@@ -23,7 +23,6 @@ define([
 		//	set our template
 		templateString: template,
 		name: "Boolean",
-		canvas: null,
 		objects: [],
 		// property/value objects to be hidden ex: {prop: "pattern", val: "solid"}
 		hiddenProps: [],
@@ -35,6 +34,8 @@ define([
 		_opList: ["AND", "OR", "NOT", "GROUP"],
 		_booleanStatementArea: "",
 		_additionalStatements: [],
+		_stateAddedHandler: null,
+		_stateChangeHandler: null,
 
 		constructor: function(problem){
 			this.problem = problem;
@@ -234,8 +235,8 @@ define([
 		startup: function(){
 
 			if(this.type === "userStatement"){
-				topic.subscribe("statementChanged", lang.hitch(this, this._updateStatement));
-				topic.subscribe("statementAdded", lang.hitch(this, this._addStatementBox));
+				this._stateChangeHandler = topic.subscribe("statementChanged", lang.hitch(this, this._updateStatement));
+				this._stateAddedHandler = topic.subscribe("statementAdded", lang.hitch(this, this._addStatementBox));
 				if(this.flags.shapes === "shapes"){
 					this.createAllShapes(false);
 				}
@@ -267,6 +268,16 @@ define([
 				domConstruct.destroy(this.booleanOpNode);
 				domConstruct.destroy(this.booleanPropNode);
 				domConstruct.destroy(this.addlBooleanStatementsNode);
+			}
+		},
+
+		destroy: function(){
+			var i;
+			this.hiddenProps = null;
+			this._stateChangeHandler.remove();
+			this._stateAddedHandler.remove();
+			for(i=0; i < this.objects.length; i++){
+				this.objects[i].destory();
 			}
 		}
 	});

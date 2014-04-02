@@ -1,4 +1,28 @@
 {
 	"levels": [
+		{
+			"level":1,
+			"problems": [
+				{
+					"type":"insertion",
+					"problemData":{
+						"num": 3
+					},
+					"flags":{}
+				}
+			]
+		},
+		{
+			"level":2,
+			"problems": [
+				{
+					"type":"quicksort",
+					"problemData":{
+						"num": 5
+					},
+					"flags":{}
+				}
+			]
+		}
 	]
 }

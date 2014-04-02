@@ -20,10 +20,15 @@ define([
 		templateString: template,
 		splash: null,
 		user: null,
+		_route2Act: {"binary":"Binary","boolean":"Boolean","sorting":"Sorting","searching":"Searching"},
 
 		_onClick: function(evt){
 			evt.preventDefault();
 			router.go(evt.target.pathname);
+		},
+
+		_getActName: function(name){
+			return this._route2Act[name];
 		},
 
 		replaceContent: function(splash){
@@ -41,71 +46,23 @@ define([
 				this.user = new User();
 			}
 			domConstruct.empty(this.containerNode);
-			router.register("/binary/?(.*)", lang.hitch(this, function(evt){
-				if(this.splash && this.splash.activityName == "Binary"){
-					console.log("existing Activity, placing problem");
-  					this.splash.setProblem(evt.params[0]);
-  				}else{
-  					// async handled within splash page.
-  					console.log("new Activity, creating and placing problem");
-  					this.replaceContent(new ActivitySplash({actName:"Binary", user:this.user}));
-  					if(evt.params[0] !== ""){
-  						this.splash.setProblem(evt.params[0]);
-  					}
-  				}
-  			}));
-
-  			router.register("/boolean/?(.*)", lang.hitch(this, function(evt){
-				if(this.splash && this.splash.activityName == "Boolean"){
-					console.log("existing Activity, placing problem");
-  					this.splash.setProblem(evt.params[0]);
-  				}else{
-  					// async handled within splash page.
-  					console.log("new Activity, creating and placing problem");
-  					this.replaceContent(new ActivitySplash({actName:"Boolean", user:this.user}));
-  					if(evt.params[0] !== ""){
-  						this.splash.setProblem(evt.params[0]);
-  					}
-  				}
-  			}));
-
-  			router.register("/sorting/?(.*)", lang.hitch(this, function(evt){
-				if(this.splash && this.splash.activityName == "sorting"){
-					console.log("existing Activity, placing problem");
-  					this.splash.setProblem(evt.params[0]);
-  				}else{
-  					// async handled within splash page.
-  					console.log("new Activity, creating and placing problem");
-  					this.replaceContent(new ActivitySplash({actName:"Sorting", user:this.user}));
-  					if(evt.params[0] !== ""){
-  						this.splash.setProblem(evt.params[0]);
-  					}
-  				}
-  			}));
-
-  			router.register("/searching/?(.*)", lang.hitch(this, function(evt){
-				if(this.splash && this.splash.activityName == "searching"){
-					console.log("existing Activity, placing problem");
-  					this.splash.setProblem(evt.params[0]);
-  				}else{
-  					// async handled within splash page.
-  					console.log("new Activity, creating and placing problem");
-  					this.replaceContent(new ActivitySplash({actName:"Searching", user:this.user}));
-  					if(evt.params[0] !== ""){
-  						this.splash.setProblem(evt.params[0]);
-  					}
-  				}
-  			}));
-
-  			router.register("/medals", lang.hitch(this, function(evt){
-				if(this.splash && this.splash.activityName == "Medals"){
-					console.log("existing Activity, showing medals");
-  				}else{
-  					// async handled within splash page.
-  					console.log("Showing medals");
-  					this.replaceContent(new TrophyShelf({user:this.user}));
-  				}
-  			}));
+			router.register("/(binary|boolean|sorting|searching|medals)/?(.*)", lang.hitch(this, function(evt){
+				var actName;
+				if(evt.params[0] === "medals"){
+					this.replaceContent(new TrophyShelf({user:this.user}));
+				}else{
+					actName = this._getActName(evt.params[0]);
+					if(this.splash && this.splash.activityName === actName){
+						this.splash.setProblem(evt.params[1]);
+					}else{
+						console.log("new Activity, creating and placing problem");
+	  					this.replaceContent(new ActivitySplash({actName:actName, user:this.user}));
+	  					if(evt.params[1] !== ""){
+	  						this.splash.setProblem(evt.params[1]);
+	  					}
+					}
+				}
+			}));
   			router.startup();
 		}
 	});

@@ -34,7 +34,11 @@ define([
         _fillShelf: function(){
             var i;
             for(i=0; i < this.user.medals.length; i++){
-                domConstruct.create("img", {src:"app/resources/images/"+this.user.medals[i].image}, this.shelfNode);
+                domConstruct.create("img", {
+                    src:"app/resources/images/"+this.user.medals[i].image,
+                    height:100,
+                    width:100
+                }, this.shelfNode);
             }
         },
 

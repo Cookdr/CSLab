@@ -10,7 +10,7 @@ define([
 
 		//	set our template
 		templateString: template,
-		name: "Searching",
+		name: "Searching"
 		
 	});
 });

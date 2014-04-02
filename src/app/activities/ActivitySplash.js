@@ -1,6 +1,8 @@
 define([
 	"./Binary",
 	"./Boolean",
+    "./Sorting",
+    "./Searching",
     "app/menu/MenuItemLevel",
     "app/Medal",
 	"dojo/_base/declare",
@@ -19,7 +21,7 @@ define([
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/ActivitySplash.html"
-],function(Binary, Boolean, MenuItemLevel, Medal, declare, lang, domConstruct, html, on, xhr, router, stringUtil, topic, Button, Dialog, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
+],function(Binary, Boolean, Sorting, Searching, MenuItemLevel, Medal, declare, lang, domConstruct, html, on, xhr, router, stringUtil, topic, Button, Dialog, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.ActivitySplash",[_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -39,6 +41,7 @@ define([
 		problem: null,
         user: null,
 		progressBar:null,
+        _successHandler: null,
         successDialog: null,
         _finTemplate:"<div><h2>Congratulations ${name}!</h2> <p>You've completed this Activity! Feel free to come back and come back and rework some of the problems, especially the timed ones. You may find that there are some surprises to be earned!</p></div>",
         _finLevelTemplate: "<div><h2>Congratulations ${name}!</h2> <p>You've completed this Level! Now the next level is going to be a little different but don't be discouraged if you find it tricky at first.</p></div>",
@@ -188,6 +191,10 @@ define([
                 break;
                 case "Boolean": act = new Boolean(problem);
                 break;
+                case "Sorting": act = new Sorting(problem);
+                break;
+                case "Searching": act = new Searching(problem);
+                break;
                 default: act = new Binary();
             }
 
@@ -215,10 +222,14 @@ define([
 
 			this.progressBar.placeAt(this.progressBarNode);
 			html.set(this.activityTitleNode, this.activityName);
-			topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));
+			this._successHandler = topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));
 		},
         destroy: function(){
             this.progressBar.destroy();
+            if(this.activity){
+                this.activity.destroy();
+            }
+            this._successHandler.remove();
             this.inherited(arguments);
         }
 	});
