@@ -4,7 +4,7 @@
 			"level":1,
 			"problems": [
 				{
-					"type":"insertion",
+					"type":"selection",
 					"problemData":{
 						"num": 3
 					},

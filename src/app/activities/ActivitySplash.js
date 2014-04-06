@@ -65,6 +65,10 @@ define([
             this._updateSidebar();
     	},
 
+        activityFailure: function(args){
+            this.directPlaceProblem(args.actName, args.problem);
+        },
+
     	setProblem: function(problem){
             if(problem != ""){
                 if(this.user.hasAccess(problem, this.activityName)){
@@ -80,6 +84,13 @@ define([
                 }
             }
     	},
+
+        directPlaceProblem: function(actName, problem){
+            domConstruct.empty(this.containerNode); 
+            this.activityName = actName;
+            this._createActivity(problem);
+            this.activity.placeAt(this.containerNode);
+        },
 
     	placeProblem: function(){
             domConstruct.empty(this.containerNode);
@@ -223,6 +234,7 @@ define([
 			this.progressBar.placeAt(this.progressBarNode);
 			html.set(this.activityTitleNode, this.activityName);
 			this._successHandler = topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));
+            this._failureHandler = topic.subscribe("ActivityFailure", lang.hitch(this, this.activityFailure));
 		},
         destroy: function(){
             this.progressBar.destroy();
@@ -230,6 +242,7 @@ define([
                 this.activity.destroy();
             }
             this._successHandler.remove();
+            this._failureHandler.remove();
             this.inherited(arguments);
         }
 	});

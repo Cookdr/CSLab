@@ -272,6 +272,11 @@ html, body{
 	background-image:url(images/shelf_bg.gif);
 }
 
+.trophyShelf .medal{
+	display:inline-block;
+	float:left;
+}
+
 /* Sorting */
 .jar{
 	background-image:url(images/jar.png);
@@ -279,11 +284,20 @@ html, body{
 	width:60px;
 	background-repeat: no-repeat;
 	float:left;
+	text-align:center;
+}
+.jar h2{
+	color:white;
+	line-height:100px;
+	margin:0px;
 }
 .jarHolder{
 	width:100%;
 	height:125px;
-	background-color:blue;
+	background-color:red;
+}
+.jarHolder.sorted{
+	background-color:green;
 }
 .balance{
 	display:inline-block;
@@ -304,4 +318,17 @@ html, body{
 	height:200px;
 	width: 100px;
 	float:left;
+}
+
+/* Searching */
+.targetJar{
+	float:left;
+	background-color:yellow;
+	height:120px;
+	width:80px;
+	line-height:120px;
+	text-align:center;
+}
+.incorrectSearch{
+	background-color:red;
 }

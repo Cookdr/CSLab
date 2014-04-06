@@ -1,4 +1,5 @@
 define([
+    "./Medal",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/dom-construct",
@@ -12,7 +13,7 @@ define([
 	"dijit/registry",
 	"app/activities/_ActivityBase",
 	"dojo/text!./templates/TrophyShelf.html"
-],function(declare, lang, domConstruct, html, on, router, stringUtil, topic, Button, ProgressBar, registry, _ActivityBase, template){
+],function(Medal, declare, lang, domConstruct, html, on, router, stringUtil, topic, Button, ProgressBar, registry, _ActivityBase, template){
 
 	return declare("app.activities.ActivitySplash",[_ActivityBase], {
 		//	set our template
@@ -34,12 +35,9 @@ define([
         _fillShelf: function(){
             var i;
             for(i=0; i < this.user.medals.length; i++){
-                domConstruct.create("img", {
-                    src:"app/resources/images/"+this.user.medals[i].image,
-                    height:100,
-                    width:100
-                }, this.shelfNode);
+             new Medal(this.user.medals[i]).placeAt(this.shelfNode);
             }
+            domConstruct.create("div", {style:"clear:both;"}, this.shelfNode);
         },
 
 		postCreate: function(){

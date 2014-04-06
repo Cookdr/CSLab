@@ -143,6 +143,10 @@ define([
 				on(this, "click", lang.hitch(this, this._toggleActive));
 				this.hide();
 			}
+		},
+
+		destroy: function(){
+			this.inherited(arguments);
 		}
 	});
 });

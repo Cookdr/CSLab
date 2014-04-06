@@ -41,6 +41,49 @@
 			"text": "Woot! NOT booleans are tricky.",
 			"condition": {"type": "binaryProgress", "cond": 1},
 			"image": "bronzeBoolMedal.png"
+		},
+				{
+			"name": "Gold Sorting",
+			"activity": "Sorting",
+			"text": "Sorting Gold Text",
+			"condition": {"type": "sortingProgress", "cond": 3},
+			"image": "goldSortMedal.png"
+		},
+		{
+			"name": "Silver Sorting",
+			"activity": "Sorting",
+			"text": "Sorting Silver Text",
+			"condition": {"type": "sortingProgress", "cond": 2},
+			"image": "silverSortMedal.png"
+		},
+		{
+			"name": "Bronze Sorting",
+			"activity": "Sorting",
+			"text": "Sorting Bronze Text",
+			"condition": {"type": "sortingProgress", "cond": 1},
+			"image": "bronzeSortMedal.png"
+		},
+		{
+			"name": "Gold Searching",
+			"activity": "Searching",
+			"text": "Searching Gold Text",
+			"condition": {"type": "searchProgress", "cond": 3},
+			"image": "goldSearchMedal.png"
+		},
+		{
+			"name": "Silver Searching",
+			"activity": "Searching",
+			"text": "Searching Silver Text",
+			"condition": {"type": "searchProgress", "cond": 2},
+			"image": "silverSearchMedal.png"
+		},
+		{
+			"name": "Bronze Searching",
+			"activity": "Searching",
+			"text": "searching Bronze Text",
+			"condition": {"type": "searchProgress", "cond": 1},
+			"image": "bronzeSearchMedal.png"
 		}
+
 	]
 }

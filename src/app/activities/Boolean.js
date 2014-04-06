@@ -274,11 +274,14 @@ define([
 		destroy: function(){
 			var i;
 			this.hiddenProps = null;
-			this._stateChangeHandler.remove();
-			this._stateAddedHandler.remove();
-			for(i=0; i < this.objects.length; i++){
-				this.objects[i].destory();
+			if(this.type === "userStatement"){
+				this._stateChangeHandler.remove();
+				this._stateAddedHandler.remove();
 			}
+			for(i=0; i < this.objects.length; i++){
+				this.objects[i].destroy();
+			}
+			this.inherited(arguments);
 		}
 	});
 });

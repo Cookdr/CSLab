@@ -1,4 +1,17 @@
 {
 	"levels": [
+		{
+			"level": 1,
+			"problems":[
+				{
+					"type": "binary",
+					"problemData": {
+						"target": 12,
+						"values": [1,2,3,4,7,8,9,12,34,23,53,63]
+					},
+					"flags":{}
+				}
+			]
+		}
 	]
 }

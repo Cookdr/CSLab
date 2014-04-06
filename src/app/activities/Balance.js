@@ -21,13 +21,15 @@ define([
 			if(this.leftJar.weight < this.rightJar.weight){
 				less = this.leftJar;
 				more = this.rightJar;
-			}else{
+			}else if(this.leftJar.weight > this.rightJar.weight){
 				less = this.rightJar;
 				more = this.leftJar;
 			}
 
-			more.heavier();
-			less.lighter();
+			if(less || more){
+				more.heavier();
+				less.lighter();
+			}
 		},
 
 		// When something is getting dragged out.

@@ -26,7 +26,7 @@ define([
 		// these should not
 		_problemList: null,
 		_medalList: null,
-		_fieldList: ["name","binaryProgress", "booleanProgress","searchProgress","sortProgress","medals",
+		_fieldList: ["name","binaryProgress", "booleanProgress","searchingProgress","sortingProgress","medals",
 					"binPB","boolPB","searchPB","sortPB"],
 
 
@@ -57,6 +57,12 @@ define([
 					case "Boolean": updateFunc = lang.hitch(this, this._updateBooleanProgress);
 									curProgress = this.booleanProgress;
 					break;
+					case "Sorting": updateFunc = lang.hitch(this, this._updateSortingProgress);
+									curProgress = this.sortingProgress;
+					break;
+					case "Searching": updateFunc = lang.hitch(this, this._updateSearchingProgress);
+									curProgress = this.searchingProgress;
+					break;
 			}
 
 			if(problem.level > curProgress.level || 
@@ -80,8 +86,8 @@ define([
 				this.name = userData.name;
 				this.binaryProgress = userData.binaryProgress;
 				this.booleanProgress = userData.booleanProgress;
-				this.searchProgress = userData.searchProgress;
-				this.sortProgress = userData.sortProgress;
+				this.searchingProgress = userData.searchingProgress;
+				this.sortingProgress = userData.sortingProgress;
 				this.medals = userData.medals;
 			}else{
 				this._getUserNamePopup();
@@ -179,6 +185,14 @@ define([
 
 		_updateBooleanProgress: function(problem){
 			this.booleanProgress = problem;
+		},
+
+		_updateSortingProgress: function(problem){
+			this.sortingProgress = problem;
+		},
+
+		_updateSearchingProgress: function(problem){
+			this.searchingProgress = problem;
 		}
 
 	});

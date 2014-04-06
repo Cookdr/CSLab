@@ -6,9 +6,10 @@ define([
 	"dojo/_base/lang",
 	"dojo/dom-construct",
 	"dojo/json",
+	"dojo/topic",
 	"./_ActivityBase",
 	"dojo/text!./templates/Sorting.html"
-],function(Balance, JarHolder, Jar, declare, lang, domConstruct, json, _ActivityBase, template){
+],function(Balance, JarHolder, Jar, declare, lang, domConstruct, json, topic, _ActivityBase, template){
 
 	return declare("app.activities.Sorting",[_ActivityBase], {
 
@@ -23,7 +24,7 @@ define([
 			this.data = problem.problemData;
 		},
 
-		_buildJars: function(){
+		_buildWeights: function(){
 			var i, weights = [];
 
 			for(i=0; i < this.data.num; i++){
@@ -33,25 +34,27 @@ define([
 			return weights;
 		},
 
-		_setupInsertionSort: function(){
-			var weights = this._buildJars();
-			new JarHolder({weights: weights, sorted:false}).placeAt(this.unsortedNode);
+		_setupSelectionSort: function(){
+			var weights = this._buildWeights();
+			new JarHolder({weights: weights, flags:{sorted:false, quicksort:false}}).placeAt(this.unsortedNode);
 			new Balance().placeAt(this.balanceNode);
-			new JarHolder({weights: [], sorted:true}).placeAt(this.sortedNode);
+			new JarHolder({weights: weights, flags:{sorted:true, quicksort:false}}).placeAt(this.sortedNode);
 		},
 
 		_setupQuicksort: function(){
-
+			var weights = this._buildWeights();
+			new JarHolder({weights: weights, flags:{sorted:true, quicksort:false}}).placeAt(this.sortedNode);
 		},
 
 		postCreate: function(){
 
-			if(this.type === "insertion"){
-				this._setupInsertionSort();
+			if(this.type === "selection"){
+				this._setupSelectionSort();
 
 			}else if(this.type === "quicksort"){
 
 			}
+			topic.subscribe("AllSorted", lang.hitch(this, this.success));
 
 		}
 	
