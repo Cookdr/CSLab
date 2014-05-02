@@ -6,7 +6,7 @@ define([
 	"dojo/dom-class",
 	"dojo/dom-construct",
 	"dojo/dom-style",
-	"dojo/dnd/Source",
+	"dojo/html",
 	"dojo/topic",
 	"dijit/form/Button",
 	"./BooleanShape",
@@ -17,7 +17,7 @@ define([
 	"dojox/gfx",
 	"./_ActivityBase",
 	"dojo/text!./templates/Boolean.html"
-],function(declare, array, lang, aspect, domClass, domConstruct, domStyle, Source, topic, Button, BooleanShape, BooleanStatementBox, BooleanStatementSource, dndUtil, booleanLogic, gfx, _ActivityBase, template){
+],function(declare, array, lang, aspect, domClass, domConstruct, domStyle, html, topic, Button, BooleanShape, BooleanStatementBox, BooleanStatementSource, dndUtil, booleanLogic, gfx, _ActivityBase, template){
 
 	return declare("app.activities.Boolean",[_ActivityBase], {
 		//	set our template
@@ -36,6 +36,7 @@ define([
 		_additionalStatements: [],
 		_stateAddedHandler: null,
 		_stateChangeHandler: null,
+		_handlers: [],
 
 		constructor: function(problem){
 			this.problem = problem;
@@ -68,6 +69,8 @@ define([
 				// if not clickable(userSelect) then need to see if selected(userStatement)
 				if(!clickable){
 					isSelected = array.filter(this.data, function(item){
+
+						// use compare
 						return item.shape === shapes[i].shape && item.color === shapes[i].color && item.pattern === shapes[i].pattern;
 					}, this);
 					if(isSelected.length > 0){
@@ -235,8 +238,9 @@ define([
 		startup: function(){
 
 			if(this.type === "userStatement"){
-				this._stateChangeHandler = topic.subscribe("statementChanged", lang.hitch(this, this._updateStatement));
-				this._stateAddedHandler = topic.subscribe("statementAdded", lang.hitch(this, this._addStatementBox));
+				html.set(this.instructionsNode, "Build the statement that will select the activated shapes.");
+				this._handlers.push(topic.subscribe("statementChanged", lang.hitch(this, this._updateStatement)));
+				this._handlers.push(topic.subscribe("statementAdded", lang.hitch(this, this._addStatementBox)));
 				if(this.flags.shapes === "shapes"){
 					this.createAllShapes(false);
 				}
@@ -256,13 +260,14 @@ define([
 					topic.publish("statementChanged");
 				});
 			}else{
+				html.set(this.instructionsNode, "Activate the shapes that would be selected by the given statement.");
 				// Only have one {statement, shape} object in the array
 				this.data = this.data[0];
 				// userSelect
 				if(this.flags.shapes === "shapes"){
 					this.createAllShapes(true);
 				}
-				this.subscribe("userSelected", this._checkSelections);
+				this._handlers.push(this.subscribe("userSelected", this._checkSelections));
 
 				this._buildStatement(this.data.statement.split(' '));
 				domConstruct.destroy(this.booleanOpNode);
@@ -272,15 +277,17 @@ define([
 		},
 
 		destroy: function(){
-			var i;
 			this.hiddenProps = null;
-			if(this.type === "userStatement"){
-				this._stateChangeHandler.remove();
-				this._stateAddedHandler.remove();
-			}
-			for(i=0; i < this.objects.length; i++){
-				this.objects[i].destroy();
-			}
+			array.forEach(this._handlers, function(handle){
+				handle.remove();
+			});
+
+			array.forEach(this.objects, function(object){
+				object.destroy();
+			});
+			array.forEach(this._additionalStatements, function(addlState){
+				addlState.destroy();
+			});
 			this.inherited(arguments);
 		}
 	});

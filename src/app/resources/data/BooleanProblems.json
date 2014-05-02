@@ -6,12 +6,39 @@
 				{
 					"type": "userStatement",
 					"problemData": [
+						{"shape": "star", "pattern": "outline", "color": "blue"},
+						{"shape": "star", "pattern": "outline", "color": "red"},
+						{"shape": "star", "pattern": "outline", "color": "black"}
+					], 
+				 	"flags":{
+				 		"shapes":"shapes"
+				 	}
+				},
+				{
+					"type": "userStatement",
+					"problemData": [
 						{"shape": "circle", "pattern": "solid", "color": "blue"}
 					], 
 				 	"flags":{
 				 		"shapes":"shapes"
 				 	}
 				},
+				{
+					"type": "userStatement",
+					"problemData": [
+						{"shape": "star", "pattern": "outline", "color": "blue"},
+						{"shape": "circle", "pattern": "outline", "color": "blue"},
+						{"shape": "square", "pattern": "outline", "color": "blue"}
+					], 
+				 	"flags":{
+				 		"shapes":"shapes"
+				 	}
+				}
+			]
+		},
+		{
+			"level": 2,
+			"problems": [
 				{
 					"type": "userSelect",
 					"problemData": [{

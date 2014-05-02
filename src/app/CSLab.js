@@ -3,6 +3,7 @@ define([
 	"./activities/Binary",
 	"./activities/Boolean",
 	"./TrophyShelf",
+	"./Resources",
 	"./User",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
@@ -13,7 +14,7 @@ define([
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/CSLab.html"
-],function(ActivitySplash, Binary, Boolean, TrophyShelf, User, declare, lang, domConstruct, Deferred, router, topic, _WidgetBase, _TemplatedMixin, template){
+],function(ActivitySplash, Binary, Boolean, TrophyShelf, Resources, User, declare, lang, domConstruct, Deferred, router, topic, _WidgetBase, _TemplatedMixin, template){
 
 	return declare([_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -46,10 +47,12 @@ define([
 				this.user = new User();
 			}
 			domConstruct.empty(this.containerNode);
-			router.register("/(binary|boolean|sorting|searching|medals)/?(.*)", lang.hitch(this, function(evt){
+			router.register("/(binary|boolean|sorting|searching|medals|resources)/?(.*)", lang.hitch(this, function(evt){
 				var actName;
 				if(evt.params[0] === "medals"){
 					this.replaceContent(new TrophyShelf({user:this.user}));
+				}else if(evt.params[0] === "resources"){
+					this.replaceContent(new Resources({user:this.user}));
 				}else{
 					actName = this._getActName(evt.params[0]);
 					if(this.splash && this.splash.activityName === actName){

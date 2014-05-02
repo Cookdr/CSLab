@@ -19,11 +19,19 @@ define([
 		weights: [],
 		jars: [],
 		flags: null,
+		emptyHandler: null,
 
 		constructor: function(args){
 			this.weights = args.weights;
 			this.sorted = args.flags.sorted;
 			this.flags = args.flags;
+		},
+
+		_addJars: function(jars){
+			var i;
+			for(i=0; i < jars.length; i++){
+				jars[i].placeAt(this.containerNode);
+			}
 		},
 
 		_buildJars: function(){
@@ -48,14 +56,14 @@ define([
 				}
 
 				if(sorted === false){
-					domClass.remove(this.containerNode, "sorted");
+					domClass.remove(this.containerNode, "success");
 					return false;
 				}else{
-					domClass.add(this.containerNode, "sorted");
+					domClass.add(this.containerNode, "success");
 					return true;
 				}
 			}else{
-				domClass.add(this.containerNode, "sorted");
+				domClass.add(this.containerNode, "success");
 				return true;
 			}
 
@@ -67,7 +75,7 @@ define([
 
 		_onDrop: function(evt){
 			evt.preventDefault();
-			var jar = registry.byId(evt.dataTransfer.getData("Text"));
+			var jar = registry.byId(evt.dataTransfer.getData("text/plain"));
 			jar.placeAt(this.containerNode);
 			if(this.sorted && this._checkSorted() && this.containerNode.children.length == this.weights.length){
 				if(!this.flags.quicksort){
@@ -84,14 +92,22 @@ define([
 
 		postCreate: function(){
 			if(this.sorted){
-				domClass.add(this.containerNode, "sorted");
+				domClass.add(this.containerNode, "success");
 				domAttr.set(this.containerNode, "ondragstart", lang.hitch(this,this._onDragStart));
 			}else{
 				//unsorted
 				this._buildJars();
+				this.emptyHandler = topic.subscribe("balanceEmpty", lang.hitch(this, this._addJars));
 			}
 			domAttr.set(this.containerNode, "ondragover", lang.hitch(this,this._onDragOver));
 			domAttr.set(this.containerNode, "ondrop", lang.hitch(this,this._onDrop));
+		},
+
+		destroy: function(){
+			if(this.emptyHandler){
+				this.emptyHandler.remove();
+			}
+			this.inherited(arguments);
 		}
 	
 	});

@@ -72,7 +72,7 @@ define([
 
 		_onDragStart: function(evt){
 			var img = domConstruct.create("img", {src:"app/resources/images/jar.png", width:60, heigth:100});
-			evt.dataTransfer.setData("text", this.id);
+			evt.dataTransfer.setData("text/plain", this.id);
 			evt.dataTransfer.setDragImage(img, 30,50);
 			console.log("dragin jar with weigth: "+this.weight);
 		},

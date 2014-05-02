@@ -1,0 +1,37 @@
+{
+	"resources":[
+		{ "title": "MOOCs - Massive Open Online Courses",
+		  "links": [
+					{
+						"link": "http://code.org/",
+						"title": "Code.org",
+						"desc": "Learn programming by writing your own game and much much more!"
+					},	
+					{
+						"link": "http://code.org/",
+						"title": "Code.org",
+						"desc": "Learn programming by writing your own game and much much more!"
+					}
+		  ]
+		},
+		{ "title": "For Teachers",
+		  "links": [
+					{
+						"link": "http://www.exploringcs.org/resources/cs-teaching-resources",
+						"title": "Exploring Computer Science",
+						"desc": "Another compilation of resources that can be used to teach Computer Science in the classroom."
+					},	
+					{
+						"link": "http://code.org/educate",
+						"title": "Code.org/educate",
+						"desc": "Entry for teachers to learn how to start using code.org in their classrooms"
+					},
+					{					
+						"link": "http://csunplugged.org/",
+						"title": "CS Unplugged",
+						"desc": "Collection of engaging, hands-on activities suitable for all ages"
+					}
+		  	]
+		}
+	]
+}

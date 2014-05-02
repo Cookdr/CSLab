@@ -1,12 +1,22 @@
 <div data-dojo-attach-point="containerNode">
-	<div data-dojo-attach-point="instructionsNode"></div>
+	<div class="instructions" data-dojo-attach-point="instructionsNode"></div>
 	<div data-dojo-attach-point="jarsNode"></div>
 	<div style="clear:both;"></div>	
-	<div class="targetJar" data-dojo-attach-point="targetJarNode"></div>
-	<div class="clicksAllowed">
-		<span data-dojo-attach-point="clicksAllowedNode"></span>
+	<div style="width:50%; margin:0px; float:left;">
+		<div class="targetJar" data-dojo-attach-point="targetJarNode">
+			<h3>Place Target Jar Here</h3>
+		</div>
 	</div>
-	<div class="clicksUsed">
-		<span data-dojo-attach-point="clicksUsedNode">0</span>
+	<div style="width:50%; margin:0px; float:left;">
+		<div class="clicksWrapper">
+			<div class="clicksAllowed">
+				<p>Allowed</p>
+				<h1 data-dojo-attach-point="clicksAllowedNode"></h1>
+			</div>
+			<div class="clicksUsed">
+				<p>Used</p>
+				<h1 data-dojo-attach-point="clicksUsedNode">0</h1>
+			</div>
+		</div>
 	</div>
 </div>

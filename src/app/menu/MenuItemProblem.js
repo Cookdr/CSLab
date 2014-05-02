@@ -4,14 +4,16 @@ define([
 	"dojo/dom-construct",
 	"dojo/dom-class",
 	"dojo/dom-style",
+	"dojo/hash",
 	"dojo/html",
 	"dojo/on",
 	"dojo/router",
+	"dojo/topic",
 	"dijit/form/Button",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/MenuItemProblem.html"
-],function(declare, lang, domConstruct, domClass, domStyle, html, on, router, Button, _WidgetBase, _TemplatedMixin, template){
+],function(declare, lang, domConstruct, domClass, domStyle, hash, html, on, router, topic, Button, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.menu.MenuItemProblem",[_WidgetBase, _TemplatedMixin], {
 
@@ -32,7 +34,11 @@ define([
                     disabled: !this.active,
                     dest: "/"+this.activityName.toLowerCase()+"/"+this.level+"/"+(this.problem+1),
                     onClick: function(evt){
-                        router.go(this.dest);
+                    	if(this.dest === hash()){
+                    		topic.publish("ResetProblem",this.dest);
+                    	}else{
+                    		router.go(this.dest);
+                    	}
                     }
                 });
 		},

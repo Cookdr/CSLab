@@ -3,11 +3,13 @@ define([
 	"dojo/_base/lang",
 	"dojo/dom-attr",
 	"dojo/dom-construct",
+	"dojo/topic",
 	"dijit/registry",
+	"dijit/form/Button",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/Balance.html"
-],function(declare, lang, domAttr, domConstruct, registry, _WidgetBase, _TemplatedMixin, template){
+],function(declare, lang, domAttr, domConstruct, topic, registry, Button,  _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.Balance",[_WidgetBase, _TemplatedMixin], {
 
@@ -15,6 +17,7 @@ define([
 		templateString: template,
 		leftJar: null,
 		rightJar: null,
+		asideJars: [],
 
 		measure: function(){
 			var less, more;
@@ -51,7 +54,7 @@ define([
 
 		_onDrop: function(evt){
 			evt.preventDefault();
-			var dest, jar = registry.byId(evt.dataTransfer.getData("Text"));
+			var dest, jar = registry.byId(evt.dataTransfer.getData("text/plain"));
 			dest = evt.currentTarget === this.leftNode ? this.leftNode : this.rightNode;
 
 			if(dest === this.leftNode){
@@ -81,7 +84,12 @@ define([
 		_onDragEnter: function(evt){
 			evt.preventDefault();
 		},
-
+		_centerOnDrop: function(evt){
+			evt.preventDefault();
+			var jar = registry.byId(evt.dataTransfer.getData("text/plain"));
+			this.asideJars.push(jar);
+			jar.domNode.parentNode.removeChild(jar.domNode);
+		},
 		postCreate: function(){
 			domAttr.set(this.leftNode, "ondragstart", lang.hitch(this,this._onDragStart));
 			domAttr.set(this.rightNode, "ondragstart", lang.hitch(this,this._onDragStart));
@@ -97,7 +105,19 @@ define([
 
 			domAttr.set(this.leftNode, "ondragenter", lang.hitch(this,this._onDragEnter));
 			domAttr.set(this.rightNode, "ondragenter", lang.hitch(this,this._onDragEnter));
+
+			domAttr.set(this.centerNode, "ondrop", lang.hitch(this,this._centerOnDrop));
+			// Want both to just prevent Default all day.
+			domAttr.set(this.centerNode, "ondragover", lang.hitch(this,this._onDragEnter));
+			domAttr.set(this.centerNode, "ondragenter", lang.hitch(this,this._onDragEnter));
 			
+			new Button({
+                label: "Retrieve Jars",
+                onClick: lang.hitch(this, function(){
+                    topic.publish("balanceEmpty", this.asideJars);
+                    this.asideJars = [];
+                })
+            }).placeAt(this.centerNode);
 		}
 	
 	});

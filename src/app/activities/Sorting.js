@@ -5,11 +5,12 @@ define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/dom-construct",
+	"dojo/html",
 	"dojo/json",
 	"dojo/topic",
 	"./_ActivityBase",
 	"dojo/text!./templates/Sorting.html"
-],function(Balance, JarHolder, Jar, declare, lang, domConstruct, json, topic, _ActivityBase, template){
+],function(Balance, JarHolder, Jar, declare, lang, domConstruct, html, json, topic, _ActivityBase, template){
 
 	return declare("app.activities.Sorting",[_ActivityBase], {
 
@@ -24,6 +25,12 @@ define([
 			this.data = problem.problemData;
 		},
 
+		_addJars: function(data){
+			if(data){
+
+			}
+		},
+
 		_buildWeights: function(){
 			var i, weights = [];
 
@@ -36,9 +43,11 @@ define([
 
 		_setupSelectionSort: function(){
 			var weights = this._buildWeights();
+			html.set(this.instructionsNode, "Using the balance scale below place the Jars in increasing order in the bottom bin.")
 			new JarHolder({weights: weights, flags:{sorted:false, quicksort:false}}).placeAt(this.unsortedNode);
 			new Balance().placeAt(this.balanceNode);
 			new JarHolder({weights: weights, flags:{sorted:true, quicksort:false}}).placeAt(this.sortedNode);
+			this.emptyHandler = topic.subscribe("balanceEmpty", lang.hitch(this, this._addJars));
 		},
 
 		_setupQuicksort: function(){
@@ -57,6 +66,5 @@ define([
 			topic.subscribe("AllSorted", lang.hitch(this, this.success));
 
 		}
-	
 	});
 });

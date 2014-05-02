@@ -7,8 +7,7 @@
 					"type": "DecToBin",
 					"problemData": [1,2,3,4,5,6,7,8], 
 				 	"flags":{
-				 		"cards": "dots",
-				 		"race": true
+				 		"cards": "dots"
 				 	}
 				},
 				{

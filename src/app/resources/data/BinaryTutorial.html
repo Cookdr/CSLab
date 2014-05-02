@@ -1,0 +1,98 @@
+<div>
+<p>	Binary numbers is the number system that computer have to use when they do their calculations.  In the binary system numbers are written using only 1's and 0's.  The underlying reason for this is that modern computers are digital in that they use electricity.  Since electricity can really only have two states: On and Off, computers use these states to represent 1's and 0's respectively.  Computers' memory can be visualized as a long line of light-switches.  When a switch is flipped up then electricity is able to flow and the light for that switch is On.  When a switch is down then electricity isn't able to flow and the light for that switch is Off.  Computers can look down this line of switches and easily see whether a switch is On of Off. So with this line of On and Off switches which we'll represent as 1's and 0's from here on out they need a system for storing and reading numbers in this manner.  This is where binary saves the day.</p>
+
+<p>Just like in decimal binary has digits.  In decimal you're probably familiar with the one's place, ten's place, hundred's place and so on.  So the 0-9 in the one's place represents how many ones we have, the 0-9 in the ten's place represents how many tens we have and so on.  So with the decimal number “24”  we are saying that we have two tens and 4 ones so 10+10+1+1+1+1 = 24.  In Binary since we only the digits 0-1 we have to change the value of the places.  Instead of powers of 10 (1,10,100,1000...) where each place represents ten times more then the last one we use the power of 2 in which each place only represents twice as much as the previous one.  With this we get the place values of (1,2,4,8,16,32...).  The table shows this difference between decimal and binary.</p>
+<table class ="binaryTable" style="border-collapse: collapse; margin:0 auto; border: 1px solid black;">
+	<tr style="border-bottom: 2px solid black;">
+		<td>Digit</td>
+		<td>5</td>
+		<td>4</td>
+		<td>3</td>
+		<td>2</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>Decimal Place Value</td>
+		<td>10,000</td>
+		<td>1,000</td>
+		<td>100</td>
+		<td>10</td>
+		<td>1</td>
+	</tr>
+	<tr>
+		<td>Binary Place Value</td>
+		<td>16</td>
+		<td>8</td>
+		<td>4</td>
+		<td>2</td>
+		<td>1</td>
+	</tr>
+</table>
+<br>
+<table class="binaryTable2" style="border-collapse: collapse; margin:0 auto; border: 1px solid black; align:right; font-family: courier;">
+	<tr>
+		<th>Decimal</th>
+		<th>Binary</th>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>00001</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>00010</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>00011</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td>00100</td>
+	</tr>
+	<tr>
+		<td>5</td>
+		<td>00101</td>
+	</tr>
+	<tr>
+		<td>6</td>
+		<td>00110</td>
+	</tr>
+	<tr>
+		<td>7</td>
+		<td>00111</td>
+	</tr>
+	<tr>
+		<td>8</td>
+		<td>01000</td>
+	</tr>
+	<tr>
+		<td>9</td>
+		<td>01001</td>
+	</tr>
+	<tr>
+		<td>10</td>
+		<td>01010</td>
+	</tr>
+</table>
+
+<p>
+In the following activities you'll be converting binary numbers to decimal and decimal numbers to binary.  In this activity we use cards to represent 1's and 0's.
+<br>
+The following cards represent a 0:<br>
+<img src="app/resources/images/deactivatedCard.png">
+<br>
+When flipped up these cards will be covered in dots representing their place value.  For example the third card from the right, having a place value of 4 will have four dots:<br>
+</p>
+<div style="background-color:white; width:80px; height:120px;">
+<img src="app/resources/images/4.png">
+</div>
+
+
+<p>
+When you are asked to take a binary number and change it into a decimal number then you will be looking at a set of cards setup representing a binary number.  Your task is to type the decimal value in the box that says "enter decimal value here". To find the decimal value of a binary number we just go and add together all of the place values that have a 1. So for 00101 we add 4 and 1 to get 5 because there is a '1' in the 4's place and the 1's place
+</p>
+<p>
+To take a decimal number and change it to binary you start with the largest power of two that can go into the decimal number.  So if we were trying to convert 25 then we would determine that 16 was the largest power of two that can fit into 25.  So we mark this down by putting a 1 in the 16's place. Since we've now marked down the 16 we subtract that from the 25 and get 9.  We then move down to the next power of two which would be 8.  Since 8 is smaller then 9 we put down a 1 in the 8's place. Subtracting 8 from 9 leaves us with 1 and our next power of two is 4.  Seeing that 4 can't fit into 1 we mark down a 0 and move one to our next power of two.  We see that 2, our next power of two,  also doesn't fit into 1 so we put a zero in our 2's place and move down to 1.  1 doesn't fit into 1 so we put a 1 in our 1's place. 
+</p>
+</div>

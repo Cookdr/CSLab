@@ -146,7 +146,7 @@ define([
 
 											}).placeAt(this.curNumLabelNode);
 
-				domClass.add(this.decTxtBox, "binaryDecTxtBox");
+				domClass.add(this.decTxtBox.domNode, "binaryDecTxtBox");
 				this.decTxtBox.focus();
 				this.updateSuccess = this.binToDecSuccess;
 			}

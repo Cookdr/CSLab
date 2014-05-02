@@ -48,6 +48,7 @@ define([
 					this.jars[i].removeFlip();
 				}
 				html.set(this.clicksUsedNode, this._clicksUsed.toString());
+				domClass.add(this.clicksUsedNode.parentNode, "error");
 			}else if(this._clicksUsed < this._clicksAllowed){
 				html.set(this.clicksUsedNode, this._clicksUsed.toString());
 			}
@@ -62,8 +63,9 @@ define([
 		},
 
 		_onTargetDrop: function(evt){
+			evt.preventDefault();
 			this._attempts++;
-			var selected = jar = registry.byId(evt.dataTransfer.getData("Text"));
+			var selected = registry.byId(evt.dataTransfer.getData("text/plain"));
 
 			if(selected.weight === this.data.target){
 				this.success();
@@ -80,6 +82,7 @@ define([
 			this._buildJars();
 			this._clickUsedHandler = topic.subscribe("ClickUsed", lang.hitch(this, this._clickUsed));
 
+			html.set(this.instructionsNode, "Your task is the find the Jar with a value of "+this.data.target+" from the Jars below (already sorted by increasing value) and place it in the selection bin. Remember that you have a limited number of flips so use them wisely!");
 			html.set(this.clicksAllowedNode, this._clicksAllowed.toString());
 			domAttr.set(this.targetJarNode, "ondragover", lang.hitch(this, this._allowDrop));
 			domAttr.set(this.targetJarNode, "ondrop", lang.hitch(this, this._onTargetDrop));

@@ -7,7 +7,9 @@ define([
     "app/Medal",
 	"dojo/_base/declare",
 	"dojo/_base/lang",
+    "dojo/_base/array",
 	"dojo/dom-construct",
+    "dojo/hash",
 	"dojo/html",
 	"dojo/on",
 	"dojo/request/xhr",
@@ -21,7 +23,7 @@ define([
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/ActivitySplash.html"
-],function(Binary, Boolean, Sorting, Searching, MenuItemLevel, Medal, declare, lang, domConstruct, html, on, xhr, router, stringUtil, topic, Button, Dialog, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
+],function(Binary, Boolean, Sorting, Searching, MenuItemLevel, Medal, declare, lang, array, domConstruct, hash, html, on, xhr, router, stringUtil, topic, Button, Dialog, ProgressBar, registry, _WidgetBase, _TemplatedMixin, template){
 
 	return declare("app.activities.ActivitySplash",[_WidgetBase, _TemplatedMixin], {
 		//	set our template
@@ -32,6 +34,21 @@ define([
             this.progressBar = new ProgressBar({
                 style: "width: 90%"
              });
+
+            xhr("app/resources/data/"+this.activityName+"Problems.json", {
+                handleAs: "json"
+            }).then(lang.hitch(this, function(data){
+                this.problemList = data;
+                this.user.setProblemList(this.problemList);
+                this.levelList = this._createSidebar(this.problemList);
+                if(this.problem && this.user.hasAccess(this.problem, this.activityName)){
+                    this.setProblem(this.problem);
+                }else{
+                    this.setProblem("");
+                }
+            }), function(err){
+                console.log(err);
+            });
 		},
 
 		templateString: template,
@@ -41,7 +58,7 @@ define([
 		problem: null,
         user: null,
 		progressBar:null,
-        _successHandler: null,
+        _handlers: [],
         successDialog: null,
         _finTemplate:"<div><h2>Congratulations ${name}!</h2> <p>You've completed this Activity! Feel free to come back and come back and rework some of the problems, especially the timed ones. You may find that there are some surprises to be earned!</p></div>",
         _finLevelTemplate: "<div><h2>Congratulations ${name}!</h2> <p>You've completed this Level! Now the next level is going to be a little different but don't be discouraged if you find it tricky at first.</p></div>",
@@ -72,7 +89,7 @@ define([
     	setProblem: function(problem){
             if(problem != ""){
                 if(this.user.hasAccess(problem, this.activityName)){
-        			if(this.problemList && problem != this.problem){
+        			if(this.problemList /*&& problem != this.problem*/){
         				console.log("Setting problem: "+problem);
         				this.problem = problem;
         				this.placeProblem();
@@ -80,8 +97,15 @@ define([
                         this.problem = problem;
                     }
                 }else{
-                    router.go("/"+this.activityName.toLowerCase());
+                    // clean up hash
+                    if(hash() !== this.activityName){
+                        router.go("/"+this.activityName.toLowerCase());
+                    }else{
+                        this._showTutorial();
+                    }
                 }
+            }else{
+                this._showTutorial();
             }
     	},
 
@@ -114,9 +138,21 @@ define([
     			}
     		}else{
     			console.log("no problem");
-                this._showHome();
+                this._showTutorial();
     		}
     	},
+
+        _showTutorial: function(){
+            xhr("app/resources/data/"+this.activityName+"Tutorial.html", {
+                handleAs: "text"
+            }).then(lang.hitch(this, function(data){
+               domConstruct.empty(this.containerNode);
+               domConstruct.create("h1", {innerHTML:this.activityName}, this.containerNode, "last");
+               domConstruct.place(data, this.containerNode);
+            }), function(err){
+                console.log(err);
+            });
+        },
 
         _buildMedalsArea: function(medals){
             var i, node,medalsArea = domConstruct.create("div", {"class": "medalArea"});
@@ -211,38 +247,28 @@ define([
 
             this.activity = act;
         },
-        _showHome: function(){
-            domConstruct.empty(this.contaierNode);
-            html.set(this.containerNode, "Please Select a Problem");
+
+        _resetProblem: function(){
+            this.activity.destroy();
+            this.placeProblem();
         },
 
 		postCreate: function(){
-            xhr("app/resources/data/"+this.activityName+"Problems.json", {
-                handleAs: "json",
-                preventCache: true
-            }).then(lang.hitch(this, function(data){
-                this.problemList = data;
-                this.user.setProblemList(this.problemList);
-                this.levelList = this._createSidebar(this.problemList);
-                if(this.problem){
-                    this.placeProblem();
-                }
-            }), function(err){
-                console.log(err);
-            });
-
+            this._handlers = [];
 			this.progressBar.placeAt(this.progressBarNode);
 			html.set(this.activityTitleNode, this.activityName);
-			this._successHandler = topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess));
-            this._failureHandler = topic.subscribe("ActivityFailure", lang.hitch(this, this.activityFailure));
+			this._handlers.push(topic.subscribe("ActivitySuccess", lang.hitch(this, this.activitySuccess)));
+            this._handlers.push(topic.subscribe("ActivityFailure", lang.hitch(this, this.activityFailure)));
+            this._handlers.push(topic.subscribe("ResetProblem", lang.hitch(this, this._resetProblem)));
 		},
         destroy: function(){
             this.progressBar.destroy();
             if(this.activity){
                 this.activity.destroy();
             }
-            this._successHandler.remove();
-            this._failureHandler.remove();
+            array.forEach(this._handlers, function(handle){
+                handle.remove();
+            });
             this.inherited(arguments);
         }
 	});

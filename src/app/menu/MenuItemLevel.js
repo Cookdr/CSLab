@@ -26,7 +26,7 @@ define([
 			this.level = args.level;
 			this.activityName = args.activityName;
 			this.problemItems = [];
-			this.prog = prog;
+			this.prog = args.prog;
 
 			if(this.prog.level >= this.level.level-1){
 				this.active = true;

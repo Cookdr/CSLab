@@ -23,6 +23,7 @@ define([
 		active: true,
 		canvas: null,
 		isSelected: null,
+		_clickHandler: null,
 
 
 		constructor: function(args){
@@ -132,7 +133,7 @@ define([
 			return p.shape === shape.shape && p.color === shape.color && p.pattern === shape.pattern;
 		},
 
-		startup: function(){
+		postCreate: function(){
 			this.canvas = gfx.createSurface(this.gfxNode, 80, 80);
 			switch(this.type){
 				case "shapes": this._drawShape();
@@ -140,13 +141,16 @@ define([
 			}
 
 			if(this.clickable){
-				on(this, "click", lang.hitch(this, this._toggleActive));
+				this._clickHandler = on(this, "click", lang.hitch(this, this._toggleActive));
 				this.hide();
 			}
 		},
 
 		destroy: function(){
 			this.inherited(arguments);
+			if(this.clickable){
+				this._clickHandler.remove();
+			}
 		}
 	});
 });
